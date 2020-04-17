@@ -3,6 +3,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <glm/mat4x4.hpp>
+#include <glm/vec2.hpp>
 #include <string>
 #include "NonCopyable.h"
 #include "Color.h"
@@ -27,6 +28,8 @@ public:
 								);
 								~Window();
 	bool						shouldClose() const;
+	glm::ivec2					getSize() const;
+	void						setWindowShouldClose(bool shouldClose);
 	void						swapBuffers() const;
 	void						clear() const;
 	void						setClearColor(Color color);

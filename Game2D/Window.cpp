@@ -102,6 +102,18 @@ bool Window::shouldClose() const {
 	return mWindowPtr ? glfwWindowShouldClose(mWindowPtr) : true;
 }
 
+glm::ivec2 Window::getSize() const {
+	glm::ivec2 result;
+	if (mWindowPtr)
+		glfwGetFramebufferSize(mWindowPtr, &result.x, &result.y);
+	return result;
+}
+
+void Window::setWindowShouldClose(bool shouldClose) {
+	if (mWindowPtr)
+		glfwSetWindowShouldClose(mWindowPtr, shouldClose);
+}
+
 void Window::clear() const {
 	makeContextCurrent();
 	glClearColor(mClearColor.r, mClearColor.g, mClearColor.b, mClearColor.a);

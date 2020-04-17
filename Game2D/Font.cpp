@@ -104,7 +104,7 @@ void Font::generateCharacterAtlas(unsigned int fontHeight) {
 		if (mFace->glyph->bitmap.rows > maxCharHeight)
 			maxCharHeight = mFace->glyph->bitmap.rows;
 	}
-	std::cout << "Maximum dimensions: " << maxCharWidth << ", " << maxCharHeight << "\n";
+	//std::cout << "Maximum dimensions: " << maxCharWidth << ", " << maxCharHeight << "\n";
 
 	// generate texture buffer and character atlas
 	CharacterAtlas atlas; // automatically initializes characterMetrics vector to needed size

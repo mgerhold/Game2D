@@ -78,6 +78,12 @@
     <ClCompile Include="ScopedProfiler.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="AudioSystem.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Music.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Window.h">
@@ -144,6 +150,12 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="ScopedProfiler.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="AudioSystem.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Music.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>

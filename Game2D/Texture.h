@@ -22,6 +22,7 @@ public:
 	bool					loadFromMemory(int width, int height, const unsigned char* data);
 	void					bind() const;
 	void					setTextureFiltering(Filtering filtering) const;
+	void					setTextureWrap(bool wrap);
 	glm::ivec2				getSize() const;
 
 	static void				unbind();
