@@ -80,14 +80,11 @@ float Music::getVolume() const {
 }
 
 bool Music::isPlaying() const {
-	if (!mOpened || !mChannel)
+	bool playing;
+	if (!mChannel)
 		return false;
-	FMOD_RESULT FMODResult;
-	bool playing;	
-	FMODResult = mChannel->isPlaying(&playing);
-	if (FMODResult == FMOD_ERR_INVALID_HANDLE)
-		return false;
-	else
-		AudioSystem::checkFMODError(FMODResult);
-	return playing;
+	FMOD_RESULT r = mChannel->isPlaying(&playing);
+	if (r == FMOD_OK)
+		return playing;
+	return false;
 }

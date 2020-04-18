@@ -1,9 +1,10 @@
 #pragma once
 
 #include "AudioSystem.h"
+#include "NonCopyable.h"
 #include <string>
 
-class Music {
+class Music : private NonCopyable {
 public:
 	Music();
 	~Music();

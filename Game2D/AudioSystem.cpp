@@ -31,19 +31,17 @@ void AudioSystem::update() {
 AudioSystem::AudioSystem() {
 	CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED);
 
-	FMOD_RESULT result;
-	result = FMOD::System_Create(&mFMODSystem);
-	checkFMODError(result);
+	//FMOD_RESULT result;
+	checkFMODError(FMOD::System_Create(&mFMODSystem));
 
 	unsigned int version;
-	result = mFMODSystem->getVersion(&version);
-	checkFMODError(result);
+	checkFMODError(mFMODSystem->getVersion(&version));
 	if (version < FMOD_VERSION) {
 		throw std::runtime_error("FMOD lib version doesn't match header version!");
 	}
 
-	result = mFMODSystem->init(512, FMOD_INIT_NORMAL, nullptr);
-	checkFMODError(result);
+	//checkFMODError(mFMODSystem->setDSPBufferSize(512, 4));
+	checkFMODError(mFMODSystem->init(512, FMOD_INIT_NORMAL, nullptr));
 
 	//std::cout << "Audio system initialized!\n";
 }

@@ -178,6 +178,8 @@
     <ClCompile Include="Music.cpp" />
     <ClCompile Include="ScopedProfiler.cpp" />
     <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="Sound.cpp" />
+    <ClCompile Include="SoundBuffer.cpp" />
     <ClCompile Include="Sprite.cpp" />
     <ClCompile Include="stb_image.cpp" />
     <ClCompile Include="Text.cpp" />
@@ -205,6 +207,8 @@
     <ClInclude Include="ScopedProfiler.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="Image.h" />
+    <ClInclude Include="Sound.h" />
+    <ClInclude Include="SoundBuffer.h" />
     <ClInclude Include="Sprite.h" />
     <ClInclude Include="Text.h" />
     <ClInclude Include="Texture.h" />

@@ -84,6 +84,12 @@
     <ClCompile Include="Music.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="SoundBuffer.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Sound.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Window.h">
@@ -156,6 +162,12 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Music.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="SoundBuffer.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Sound.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>

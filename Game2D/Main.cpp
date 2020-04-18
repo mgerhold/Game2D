@@ -1,4 +1,7 @@
 #include <iostream>
+#include <string>
+#include <vector>
+#include <list>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include "Window.h"
@@ -12,10 +15,14 @@
 #include "Utility.h"
 #include "AudioSystem.h"
 #include "Music.h"
+#include "SoundBuffer.h"
+#include "Sound.h"
 
 #include <memory>
 
-#define APPLICATION_TITLE "GLFW/GLAD Application"
+using namespace std::literals::string_literals;
+
+#define APPLICATION_TITLE "GLFW/GLAD Application"s
 
 int main() {
 	try {
@@ -91,14 +98,36 @@ int main() {
 		Clock clock;
 		Clock fpsClock;
 
+		// music and sound
 		Music music;
 		music.openFromFile("music/battleship.ogg");
 		music.setVolume(0.4f);
-		music.play();
-		std::cout << "Playing music file...\n";
+		//music.play();
+		//std::cout << "Playing music file...\n";
+		SoundBuffer sb;
+		sb.loadFromFile("sfx/crow.wav");
+		Sound crowSound;
+		crowSound.setSoundBuffer(sb);
+		std::list<Sound> sounds;
+		SoundBuffer kick, snare, hats, crash;
+		kick.loadFromFile("sfx/Drums-Kick.wav");
+		snare.loadFromFile("sfx/Drums-Snare.wav");
+		hats.loadFromFile("sfx/Drums-Hats.wav");
+		crash.loadFromFile("sfx/Drums-Crash.wav");
 
 		while (!window.shouldClose()) {
 			AudioSystem::update();
+			// clean up sounds
+			static size_t soundCount = sounds.size();
+			sounds.remove_if([](const Sound& sound) -> bool {
+				return !sound.isPlaying();
+			});
+			if (sounds.size() != soundCount) {
+				std::cout << "Sound count has changed. Now there are " << sounds.size() << " sounds.\n";
+				soundCount = sounds.size();
+			}
+			
+
 			Window::processEvents();
 			while (window.hasEvent()) {
 				Event e = window.pollEvent();
@@ -116,9 +145,45 @@ int main() {
 								music.play();
 								break;
 							case Key::C:
-								music.openFromFile("music/crow.wav");
-								music.play(4);
+							{								
+								Sound sound;
+								sound.setSoundBuffer(sb);
+								sounds.push_back(sound);
+								sounds.back().play();
 								break;
+							}
+							case Key::V:
+							{
+								Sound drum;
+								drum.setSoundBuffer(kick);
+								sounds.push_back(drum);
+								sounds.back().play();
+								break;
+							}
+							case Key::F:
+							{
+								Sound drum;
+								drum.setSoundBuffer(snare);
+								sounds.push_back(drum);
+								sounds.back().play();
+								break;
+							}
+							case Key::N:
+							{
+								Sound drum;
+								drum.setSoundBuffer(hats);
+								sounds.push_back(drum);
+								sounds.back().play();
+								break;
+							}
+							case Key::J:
+							{
+								Sound drum;
+								drum.setSoundBuffer(crash);
+								sounds.push_back(drum);
+								sounds.back().play();
+								break;
+							}
 							case Key::M:
 								music.openFromFile("music/battleship.ogg");
 								music.play();
@@ -158,8 +223,7 @@ int main() {
 			if (fpsClock.getElapsedTime() >= Time::seconds(1.f)) {
 				float duration = fpsClock.restart().asSeconds();
 				float fps = static_cast<float>(renderedFrames) / duration;
-				const std::string title = std::string(APPLICATION_TITLE) + " (" + std::to_string(fps) + " fps)";
-				window.setTitle(title);
+				window.setTitle(APPLICATION_TITLE + " ("s + std::to_string(fps) + " fps)"s);
 				renderedFrames = 0;
 			}
 		}		
