@@ -17,12 +17,27 @@
 #include "Music.h"
 #include "SoundBuffer.h"
 #include "Sound.h"
+#include "ResourceHolder.h"
 
 #include <memory>
 
 using namespace std::literals::string_literals;
 
 #define APPLICATION_TITLE "GLFW/GLAD Application"s
+
+enum class TextureID {
+	Eagle,
+	Raptor,
+	FMODLogo,
+};
+
+enum class SoundID {
+	Kick,
+	Snare,
+	Hats,
+	Crash,
+	Crow,
+};
 
 int main() {
 	try {
@@ -46,27 +61,24 @@ int main() {
 		states.shader = &shader;
 		states.transform = Transform::Identity;
 
-		Texture textureEagle;
-		textureEagle.loadFromFile("textures/eagle.png");
-		textureEagle.setTextureFiltering(Texture::Filtering::Nearest);
-
-		Texture textureRaptor;
-		textureRaptor.loadFromFile("textures/raptor.png");
-		textureRaptor.setTextureFiltering(Texture::Filtering::Nearest);
+		ResourceHolder<TextureID, Texture> textureHolder;
+		textureHolder.load(TextureID::Eagle, "textures/eagle.png");
+		textureHolder.load(TextureID::Raptor, "textures/raptor.png");
+		textureHolder.load(TextureID::FMODLogo, "textures/fmod_logo.png");
+		textureHolder.get(TextureID::Eagle).setTextureFiltering(Texture::Filtering::Nearest);
+		textureHolder.get(TextureID::Raptor).setTextureFiltering(Texture::Filtering::Nearest);
+		textureHolder.get(TextureID::FMODLogo).setTextureFiltering(Texture::Filtering::Nearest);
 
 		Sprite spriteEagle;
-		spriteEagle.setTexture(textureEagle);
+		spriteEagle.setTexture(textureHolder.get(TextureID::Eagle));
 		spriteEagle.setOrigin(-150.f, 0.f);
 
 		Sprite spriteRaptor;
-		spriteRaptor.setTexture(textureRaptor);
+		spriteRaptor.setTexture(textureHolder.get(TextureID::Raptor));
 		spriteRaptor.centerOrigin();
 
-		Texture fmodLogo;
-		fmodLogo.loadFromFile("textures/fmod_logo.png");
-		fmodLogo.setTextureFiltering(Texture::Filtering::Nearest);
 		Sprite fmodSprite;
-		fmodSprite.setTexture(fmodLogo);
+		fmodSprite.setTexture(textureHolder.get(TextureID::FMODLogo));
 		fmodSprite.setPosition(
 			static_cast<float>(-window.getSize().x / 2 + 10),
 			static_cast<float>(-window.getSize().y / 2 + 10)
@@ -101,39 +113,23 @@ int main() {
 		// music and sound
 		Music music;
 		music.openFromFile("music/battleship.ogg");
-		music.setVolume(0.4f);
-		//music.play();
-		//std::cout << "Playing music file...\n";
-		SoundBuffer sb;
-		sb.loadFromFile("sfx/crow.wav");
-		Sound crowSound;
-		crowSound.setSoundBuffer(sb);
+		music.setVolume(0.2f);
+		ResourceHolder<SoundID, SoundBuffer> soundHolder;
+		soundHolder.load(SoundID::Kick, "sfx/Drums-Kick.wav");
+		soundHolder.load(SoundID::Snare, "sfx/Drums-Snare.wav");
+		soundHolder.load(SoundID::Hats, "sfx/Drums-Hats.wav");
+		soundHolder.load(SoundID::Crash, "sfx/Drums-Crash.wav");
+		soundHolder.load(SoundID::Crow, "sfx/crow.wav");
 		std::list<Sound> sounds;
-		SoundBuffer kick, snare, hats, crash;
-		kick.loadFromFile("sfx/Drums-Kick.wav");
-		snare.loadFromFile("sfx/Drums-Snare.wav");
-		hats.loadFromFile("sfx/Drums-Hats.wav");
-		crash.loadFromFile("sfx/Drums-Crash.wav");
 
 		while (!window.shouldClose()) {
 			AudioSystem::update();
-			// clean up sounds
-			static size_t soundCount = sounds.size();
-			sounds.remove_if([](const Sound& sound) -> bool {
-				return !sound.isPlaying();
-			});
-			if (sounds.size() != soundCount) {
-				std::cout << "Sound count has changed. Now there are " << sounds.size() << " sounds.\n";
-				soundCount = sounds.size();
-			}
-			
 
 			Window::processEvents();
 			while (window.hasEvent()) {
 				Event e = window.pollEvent();
 				switch (e.type) {
 					case Event::Type::KeyPress:
-						std::cout << "Key was pressed\n";
 						switch (e.key) {
 							case Key::Escape:
 								window.setWindowShouldClose(true);
@@ -147,41 +143,36 @@ int main() {
 							case Key::C:
 							{								
 								Sound sound;
-								sound.setSoundBuffer(sb);
-								sounds.push_back(sound);
-								sounds.back().play();
+								sound.setSoundBuffer(soundHolder.get(SoundID::Crow));
+								AudioSystem::playSound(sound);
 								break;
 							}
 							case Key::V:
 							{
 								Sound drum;
-								drum.setSoundBuffer(kick);
-								sounds.push_back(drum);
-								sounds.back().play();
+								drum.setSoundBuffer(soundHolder.get(SoundID::Kick));
+								AudioSystem::playSound(drum);
 								break;
 							}
 							case Key::F:
 							{
 								Sound drum;
-								drum.setSoundBuffer(snare);
-								sounds.push_back(drum);
-								sounds.back().play();
+								drum.setSoundBuffer(soundHolder.get(SoundID::Snare));
+								AudioSystem::playSound(drum);
 								break;
 							}
 							case Key::N:
 							{
 								Sound drum;
-								drum.setSoundBuffer(hats);
-								sounds.push_back(drum);
-								sounds.back().play();
+								drum.setSoundBuffer(soundHolder.get(SoundID::Hats));
+								AudioSystem::playSound(drum);
 								break;
 							}
 							case Key::J:
 							{
 								Sound drum;
-								drum.setSoundBuffer(crash);
-								sounds.push_back(drum);
-								sounds.back().play();
+								drum.setSoundBuffer(soundHolder.get(SoundID::Crash));
+								AudioSystem::playSound(drum);
 								break;
 							}
 							case Key::M:
@@ -191,7 +182,6 @@ int main() {
 						}
 						break;
 					case Event::Type::KeyRelease:
-						std::cout << "Key was released\n";
 						break;						
 				}
 			}

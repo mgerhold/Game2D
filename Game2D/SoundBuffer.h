@@ -6,10 +6,11 @@
 
 class SoundBuffer : private NonCopyable {
 public:
-					SoundBuffer();
+					SoundBuffer() noexcept;
 					~SoundBuffer();
+					SoundBuffer(SoundBuffer&& other) noexcept;
 
-	void			loadFromFile(const std::string& filename);
+	bool			loadFromFile(const std::string& filename);
 
 private:
 	FMOD::System*	mSystem;

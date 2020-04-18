@@ -2,6 +2,9 @@
 
 #include <fmod/fmod.hpp>
 #include <memory>
+#include <list>
+
+class Sound;
 
 class AudioSystem {
 public:
@@ -12,9 +15,12 @@ public:
 
 	static void							checkFMODError(FMOD_RESULT result);
 	static void							update();
+	static Sound&						playSound(Sound sound);
 private:
 										AudioSystem();
 private:
-	static std::unique_ptr<AudioSystem>	sInstance;
 	FMOD::System*						mFMODSystem;
+
+	static std::unique_ptr<AudioSystem>	sInstance;
+	static std::list<Sound>				sSoundList;
 };

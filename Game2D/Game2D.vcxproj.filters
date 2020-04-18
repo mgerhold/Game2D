@@ -170,11 +170,17 @@
     <ClInclude Include="Sound.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="ResourceHolder.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\default.vert" />
     <None Include="shaders\default.frag" />
     <None Include="Rect.inl">
+      <Filter>Headerdateien</Filter>
+    </None>
+    <None Include="ResourceHolder.inl">
       <Filter>Headerdateien</Filter>
     </None>
   </ItemGroup>

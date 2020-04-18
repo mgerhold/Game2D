@@ -204,6 +204,7 @@
     <ClInclude Include="Rect.h" />
     <ClInclude Include="NonCopyable.h" />
     <ClInclude Include="RenderStates.h" />
+    <ClInclude Include="ResourceHolder.h" />
     <ClInclude Include="ScopedProfiler.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="Image.h" />
@@ -222,6 +223,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Rect.inl" />
+    <None Include="ResourceHolder.inl" />
     <None Include="shaders\default.frag" />
     <None Include="shaders\default.vert" />
   </ItemGroup>

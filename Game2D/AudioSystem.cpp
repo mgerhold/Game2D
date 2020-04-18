@@ -4,12 +4,14 @@
 #include <fmod/fmod_errors.h>
 #include <stdexcept>
 #include <iostream>
+#include "Sound.h"
 
 std::unique_ptr<AudioSystem> AudioSystem::sInstance = nullptr;
+std::list<Sound> AudioSystem::sSoundList = std::list<Sound>();
 
 AudioSystem* AudioSystem::getInstance() {
 	if (!sInstance)
-		sInstance = std::unique_ptr<AudioSystem>(new AudioSystem); // new keyword because of private constructor
+		sInstance = std::unique_ptr<AudioSystem>(new AudioSystem); // "new" keyword because of private constructor
 	return sInstance.get();
 }
 
@@ -18,11 +20,23 @@ FMOD::System* AudioSystem::getFMODSystem() const {
 }
 
 void AudioSystem::update() {
+	// update step for FMOD
 	FMOD::System* system = nullptr;
 	if (sInstance)
 		system = sInstance->getFMODSystem();
 	if (system)
 		system->update();
+
+	// remove sounds that are not playing anymore
+	sSoundList.remove_if([](const Sound& sound) -> bool {
+		return !sound.isPlaying();
+	});
+}
+
+Sound& AudioSystem::playSound(Sound sound) {
+	sSoundList.push_back(sound);
+	sSoundList.back().play();
+	return sSoundList.back();
 }
 
 /*
