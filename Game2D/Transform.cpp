@@ -10,6 +10,10 @@ glm::mat4 Transform::getMatrix() const {
 	return mMatrix;
 }
 
+void Transform::setMatrix(glm::mat4 matrix) {
+	mMatrix = matrix;
+}
+
 void Transform::translate(float x, float y) {
 	mMatrix = glm::translate(mMatrix, glm::vec3(x, y, 0.f));
 }

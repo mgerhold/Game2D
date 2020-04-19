@@ -9,6 +9,8 @@
 #include "Color.h"
 #include "EventHandler.h"
 #include <vector>
+#include "Shader.h"
+#include "Camera.h"
 
 class Drawable;
 struct RenderStates;
@@ -39,6 +41,7 @@ public:
 	bool						isKeyPressed(Key key) const;
 	void						setTitle(const std::string& title);
 	void						makeContextCurrent() const;
+	void						draw(const Drawable& drawable, const Camera& camera = Camera()) const;
 	void						draw(const Drawable& drawable, RenderStates states) const;
 	// static methods
 	static void					processEvents();
@@ -54,6 +57,7 @@ private:
 	int							mInitialWidth;
 	int							mInitialHeight;
 	glm::mat4					mProjectionMatrix;
+	Shader						mDefaultShader;
 
 	// static variables
 	static bool					sGlfwAndGladInitialized;

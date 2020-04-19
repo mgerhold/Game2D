@@ -8,6 +8,7 @@ class Transform {
 public:
 							Transform(glm::mat4 matrix = glm::mat4(1.f));				
 	glm::mat4				getMatrix() const;
+	void					setMatrix(glm::mat4 matrix);
 	void					translate(float x, float y);
 	void					translate(glm::vec2 translation);
 	void					rotate(float radians);

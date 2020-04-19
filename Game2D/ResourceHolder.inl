@@ -3,7 +3,8 @@ inline void ResourceHolder<idT, resT>::load(idT id, const std::string& filename)
 	const auto find = mResourceMap.find(id);
 	assert(find == mResourceMap.end());
 	resT resource;
-	assert(resource.loadFromFile(filename));
+	bool success = resource.loadFromFile(filename);
+	assert(success);
 	mResourceMap.insert({ id, std::move(resource) });
 }
 

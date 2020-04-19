@@ -18,6 +18,7 @@
 #include "SoundBuffer.h"
 #include "Sound.h"
 #include "ResourceHolder.h"
+#include "Camera.h"
 
 #include <memory>
 
@@ -114,29 +115,68 @@ int main() {
 		Music music;
 		music.openFromFile("music/battleship.ogg");
 		music.setVolume(0.2f);
+
 		ResourceHolder<SoundID, SoundBuffer> soundHolder;
 		soundHolder.load(SoundID::Kick, "sfx/Drums-Kick.wav");
 		soundHolder.load(SoundID::Snare, "sfx/Drums-Snare.wav");
 		soundHolder.load(SoundID::Hats, "sfx/Drums-Hats.wav");
 		soundHolder.load(SoundID::Crash, "sfx/Drums-Crash.wav");
 		soundHolder.load(SoundID::Crow, "sfx/crow.wav");
-		std::list<Sound> sounds;
+
+		Camera camera;
 
 		while (!window.shouldClose()) {
+			// update
 			AudioSystem::update();
 
+			static float lastElapsed = clock.getElapsedTime().asSeconds();
+			float elapsed = clock.getElapsedTime().asSeconds();
+			float dt = elapsed - lastElapsed;
+			lastElapsed = elapsed;
+
+			float rotation = glm::radians(80.f * elapsed);
+			spriteRaptor.setRotation(-2.f * rotation);
+			spriteRaptor.setScale(std::sin(2.5f * elapsed) * 2.5f + 3.5f, 2.f);
+
+			spriteEagle.setRotation(rotation);
+
+			text.setScale(std::sin(2.0f * elapsed) * 1.5f + 2.f, 1.2f);
+			text.setRotation(0.3f * rotation);
+
+			// handle real-time input
+			static constexpr float movementSpeed = 600.f;
+			static constexpr float rotationSpeed = glm::radians(70.f);
+			glm::vec2 movement = glm::vec2(0.f);
+			if (window.isKeyPressed(Key::A))
+				movement += glm::vec2(-1.f, 0.f);
+			if (window.isKeyPressed(Key::D))
+				movement += glm::vec2(1.f, 0.f);
+			if (window.isKeyPressed(Key::W))
+				movement += glm::vec2(0.f, 1.f);
+			if (window.isKeyPressed(Key::S))
+				movement += glm::vec2(0.f, -1.f);
+			if (movement.length() > 0.f)
+				movement *= movementSpeed / movement.length();
+			camera.move(movement * dt);
+
+			if (window.isKeyPressed(Key::E))
+				camera.rotate(-rotationSpeed * dt);
+			if (window.isKeyPressed(Key::Q))
+				camera.rotate(rotationSpeed * dt);
+
+			// handle events
 			Window::processEvents();
 			while (window.hasEvent()) {
 				Event e = window.pollEvent();
 				switch (e.type) {
+					case Event::Type::MouseScroll:
+						camera.zoom(1.f + 0.1f * static_cast<float>(e.mouseScrollDelta.y));
+						break;
 					case Event::Type::KeyPress:
 						switch (e.key) {
 							case Key::Escape:
 								window.setWindowShouldClose(true);
-								break;
-							case Key::S:
-								music.stop();
-								break;
+								break;							
 							case Key::P:
 								music.play();
 								break;
@@ -176,8 +216,12 @@ int main() {
 								break;
 							}
 							case Key::M:
-								music.openFromFile("music/battleship.ogg");
-								music.play();
+								if (music.isPlaying())
+									music.stop();
+								else {
+									//music.openFromFile("music/battleship.ogg");
+									music.play();
+								}
 								break;
 						}
 						break;
@@ -185,31 +229,21 @@ int main() {
 						break;						
 				}
 			}
-			window.clear();
 
-			float elapsed = clock.getElapsedTime().asSeconds();			
+			// render
+			window.clear();			
 
-
-			float rotation = glm::radians(80.f * elapsed);
-			spriteRaptor.setRotation(-2.f*rotation);
-			spriteRaptor.setScale(std::sin(2.5f*elapsed) * 2.5f + 3.5f, 2.f);
-			
-			spriteEagle.setRotation(rotation);
-
-			text.setScale(std::sin(2.0f * elapsed) * 1.5f + 2.f, 1.2f);			
-			text.setRotation(0.3f * rotation);
-
-			window.draw(fmodSprite, states);
-			window.draw(va, states);
-
-			window.draw(spriteRaptor, states);
-			window.draw(spriteEagle, states);			
-			window.draw(text, states);
-			window.draw(text2, states);
+			window.draw(fmodSprite);
+			window.draw(va, camera);
+			window.draw(spriteRaptor, camera);
+			window.draw(spriteEagle, camera);
+			window.draw(text, camera);
+			window.draw(text2, camera);
 			
 			window.swapBuffers();
 			renderedFrames++;
 
+			// show fps in title bar
 			if (fpsClock.getElapsedTime() >= Time::seconds(1.f)) {
 				float duration = fpsClock.restart().asSeconds();
 				float fps = static_cast<float>(renderedFrames) / duration;

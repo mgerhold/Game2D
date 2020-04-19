@@ -27,9 +27,6 @@
     <ClCompile Include="Color.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Event.cpp">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
     <ClCompile Include="EventHandler.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
@@ -88,6 +85,12 @@
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Sound.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Event.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>
@@ -171,6 +174,9 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="ResourceHolder.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>

@@ -13,6 +13,11 @@ void EventHandler::attachToWindow(GLFWwindow* window) {
 		static_cast<EventHandler*>(glfwGetWindowUserPointer(window))->keyCallback(window, key, scancode, action, mods);
 	};
 	glfwSetKeyCallback(window, keyCallbackLambda);
+
+	auto scrollCallbackLambda = [](GLFWwindow* window, double xoffset, double yoffset) {
+		static_cast<EventHandler*>(glfwGetWindowUserPointer(window))->scrollCallback(window, xoffset, yoffset);
+	};
+	glfwSetScrollCallback(window, scrollCallbackLambda);
 }
 
 bool EventHandler::hasEvent() const {
@@ -58,6 +63,14 @@ void EventHandler::keyCallback(GLFWwindow* window, int key, int scancode, int ac
 			mPressedKeys.erase(find);
 		}
 	}
+}
+
+void EventHandler::scrollCallback(GLFWwindow* window, double xoffset, double yoffset) {
+	Event e;
+	e.type = Event::Type::MouseScroll;
+	e.mouseScrollDelta.x = xoffset;
+	e.mouseScrollDelta.y = yoffset;
+	mEventQueue.push(e);
 }
 
 Key EventHandler::getKeyFromKeycode(int key) const {

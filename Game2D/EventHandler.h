@@ -16,6 +16,7 @@ public:
 	bool				isKeyPressed(Key key) const;
 private:
 	void				keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
+	void				scrollCallback(GLFWwindow* window, double xoffset, double yoffset);
 	Key					getKeyFromKeycode(int key) const;
 private:
 	std::queue<Event>	mEventQueue;

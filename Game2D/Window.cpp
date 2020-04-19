@@ -84,6 +84,10 @@ Window::Window(
 	Window::sWindowList.push_back(this);
 
 	sGlfwAndGladInitialized = true;
+
+	// TODO: Refactor!
+	mDefaultShader.loadFromFile("shaders/default.vert", Shader::Type::Vertex);
+	mDefaultShader.loadFromFile("shaders/default.frag", Shader::Type::Fragment);
 }
 
 Window::~Window() {
@@ -103,7 +107,7 @@ bool Window::shouldClose() const {
 }
 
 glm::ivec2 Window::getSize() const {
-	glm::ivec2 result;
+	glm::ivec2 result(0);
 	if (mWindowPtr)
 		glfwGetFramebufferSize(mWindowPtr, &result.x, &result.y);
 	return result;
@@ -116,8 +120,8 @@ void Window::setWindowShouldClose(bool shouldClose) {
 
 void Window::clear() const {
 	makeContextCurrent();
-	glClearColor(mClearColor.r, mClearColor.g, mClearColor.b, mClearColor.a);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	GLCALL(glClearColor(mClearColor.r, mClearColor.g, mClearColor.b, mClearColor.a));
+	GLCALL(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
 }
 
 void Window::setClearColor(Color color) {
@@ -148,10 +152,17 @@ void Window::makeContextCurrent() const {
 	getContext();
 }
 
+void Window::draw(const Drawable& drawable, const Camera& camera) const {
+	RenderStates states;	
+	states.transform.setMatrix(mProjectionMatrix * camera.getMatrix());
+	states.shader = &mDefaultShader;
+	draw(drawable, states);
+}
+
 void Window::draw(const Drawable& drawable, RenderStates states) const {
 	makeContextCurrent();
-	states.shader->use();
-	states.shader->setUniformMat4fv("uProjectionMatrix", mProjectionMatrix);
+	//states.shader->use();
+	//states.shader->setUniformMat4fv("uProjectionMatrix", mProjectionMatrix);
 	drawable.draw(*this, states);
 }
 

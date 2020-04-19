@@ -128,16 +128,25 @@ enum class Key { // using GLFW keycodes, can be replaced if needed
 	LastKey = GLFW_KEY_MENU,
 };
 
+struct MouseScrollDelta {
+	double x = 0.0;
+	double y = 0.0;
+};
+
 struct Event {
 	enum class Type {
 		None,
 		KeyPress,
 		KeyRelease,
+		MouseScroll,
 	};
 
 	union {
 		Key key = Key::Unknown;
+		MouseScrollDelta mouseScrollDelta;
 	};
 
-	Type type = Type::None;
+	Type type;
+
+	Event();
 };
