@@ -4,6 +4,7 @@
 #include <list>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <glm/gtx/string_cast.hpp>
 #include "Window.h"
 #include "Shader.h"
 #include "VertexArray.h"
@@ -30,6 +31,7 @@ enum class TextureID {
 	Eagle,
 	Raptor,
 	FMODLogo,
+	Checkerboard,
 };
 
 enum class SoundID {
@@ -66,9 +68,11 @@ int main() {
 		textureHolder.load(TextureID::Eagle, "textures/eagle.png");
 		textureHolder.load(TextureID::Raptor, "textures/raptor.png");
 		textureHolder.load(TextureID::FMODLogo, "textures/fmod_logo.png");
+		textureHolder.load(TextureID::Checkerboard, "textures/checkerboard.jpg");
 		textureHolder.get(TextureID::Eagle).setTextureFiltering(Texture::Filtering::Nearest);
 		textureHolder.get(TextureID::Raptor).setTextureFiltering(Texture::Filtering::Nearest);
 		textureHolder.get(TextureID::FMODLogo).setTextureFiltering(Texture::Filtering::Nearest);
+		textureHolder.get(TextureID::Checkerboard).setTextureWrap(true);
 
 		Sprite spriteEagle;
 		spriteEagle.setTexture(textureHolder.get(TextureID::Eagle));
@@ -79,26 +83,26 @@ int main() {
 		spriteRaptor.centerOrigin();
 
 		Sprite fmodSprite;
-		fmodSprite.setTexture(textureHolder.get(TextureID::FMODLogo));
-		fmodSprite.setPosition(
-			static_cast<float>(-window.getSize().x / 2 + 10),
-			static_cast<float>(-window.getSize().y / 2 + 10)
-		);
+		fmodSprite.setTexture(textureHolder.get(TextureID::FMODLogo));		
 		fmodSprite.setScale(glm::vec2(0.3f));
+
+		Sprite checkerboard;
+		checkerboard.setTexture(textureHolder.get(TextureID::Checkerboard));
+		checkerboard.setTiling(4, 4);
+		checkerboard.centerOrigin();
 
 		// text test
 		Font font;
 		font.loadFromFile("fonts/comicbd.ttf");
-		//font.generateCharacterAtlas(48);
 		Text text;
 		text.setFont(font, 48);
 		text.setString("Comic Sans MS");
 		text.centerOrigin();
 		Text text2;
 		text2.setFont(font, 60);
-		text2.setString("playing battleship.ogg");
+		text2.setString("Camera Control Test");
+		text2.setPosition(0.f, 200.f);
 		text2.setColor(Color(0.31f, 0.4365f, 1.0f, 1.f));
-		//text2.setScale(glm::vec2(2.f));
 		text2.centerOrigin();
 
 		VertexArray va;
@@ -143,6 +147,11 @@ int main() {
 			text.setScale(std::sin(2.0f * elapsed) * 1.5f + 2.f, 1.2f);
 			text.setRotation(0.3f * rotation);
 
+			fmodSprite.setPosition(
+				static_cast<float>(-window.getSize().x / 2 + 10),
+				static_cast<float>(-window.getSize().y / 2 + 10)
+			);
+
 			// handle real-time input
 			static constexpr float movementSpeed = 600.f;
 			static constexpr float rotationSpeed = glm::radians(70.f);
@@ -155,20 +164,47 @@ int main() {
 				movement += glm::vec2(0.f, 1.f);
 			if (window.isKeyPressed(Key::S))
 				movement += glm::vec2(0.f, -1.f);
-			if (movement.length() > 0.f)
-				movement *= movementSpeed / movement.length();
+			if (glm::length(movement) > 0.f)
+				movement *= movementSpeed / static_cast<float>(glm::length(movement));
 			camera.move(movement * dt);
 
-			if (window.isKeyPressed(Key::E))
-				camera.rotate(-rotationSpeed * dt);
-			if (window.isKeyPressed(Key::Q))
+			movement = glm::vec2(1.f, 0.f) * EventHandler::getGamepadAxis(Joystick::Joystick0, GamepadAxis::LeftX)
+				+ glm::vec2(0.f, -1.f) * EventHandler::getGamepadAxis(Joystick::Joystick0, GamepadAxis::LeftY);
+			if (glm::length(movement) > 0.2f) {
+				//std::cout << "\tmovement: " << glm::to_string(movement) << ", length = " << glm::length(movement) << "\n";
+				movement = movement * static_cast<float>(glm::length(movement)) / std::sqrt(2.f) * movementSpeed;
+				camera.move(movement * dt);
+			}
+			float zoom = -EventHandler::getGamepadAxis(Joystick::Joystick0, GamepadAxis::RightY);
+			if (std::abs(zoom) > 0.2f) {
+				camera.zoom(1.f + zoom * 4.f * dt);
+			}				
+
+			if (window.isKeyPressed(Key::Q) || EventHandler::isGamepadButtonPressed(Joystick::Joystick0, GamepadButton::LeftBumper))
 				camera.rotate(rotationSpeed * dt);
+			if (window.isKeyPressed(Key::E) || EventHandler::isGamepadButtonPressed(Joystick::Joystick0, GamepadButton::RightBumper))
+				camera.rotate(-rotationSpeed * dt);
 
 			// handle events
 			Window::processEvents();
 			while (window.hasEvent()) {
 				Event e = window.pollEvent();
 				switch (e.type) {
+					case Event::Type::JoystickConnected:
+						std::cout << "Joystick/Gamepad " << static_cast<int>(e.joystick) << " connected\n";
+						break;
+					case Event::Type::JoystickDisconnected:
+						std::cout << "Joystick/Gamepad " << static_cast<int>(e.joystick) << " disconnected\n";
+						break;
+					/*case Event::Type::GamepadButtonPress:
+						std::cout << "Gamepad " << EventHandler::getGamepadName(e.joystick) << " button " << static_cast<int>(e.gamepadButton) << " has been pressed\n";
+						break;
+					case Event::Type::GamepadButtonRelease:
+						std::cout << "Gamepad " << EventHandler::getGamepadName(e.joystick) << " button " << static_cast<int>(e.gamepadButton) << " has been released\n";
+						break;
+					case Event::Type::GamepadAxisChange:
+						std::cout << "Gamepad " << EventHandler::getGamepadName(e.joystick) << " axis " << static_cast<int>(e.gamepadAxisChange.axis) << " changed to " << e.gamepadAxisChange.value << "\n";
+						break;*/
 					case Event::Type::MouseScroll:
 						camera.zoom(1.f + 0.1f * static_cast<float>(e.mouseScrollDelta.y));
 						break;
@@ -233,12 +269,14 @@ int main() {
 			// render
 			window.clear();			
 
-			window.draw(fmodSprite);
+			window.draw(checkerboard, camera);
 			window.draw(va, camera);
 			window.draw(spriteRaptor, camera);
 			window.draw(spriteEagle, camera);
 			window.draw(text, camera);
 			window.draw(text2, camera);
+
+			window.draw(fmodSprite);
 			
 			window.swapBuffers();
 			renderedFrames++;

@@ -2,6 +2,7 @@
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include "GamepadState.h"
 
 enum class Key { // using GLFW keycodes, can be replaced if needed
 	Unknown = GLFW_KEY_UNKNOWN,
@@ -128,7 +129,48 @@ enum class Key { // using GLFW keycodes, can be replaced if needed
 	LastKey = GLFW_KEY_MENU,
 };
 
+enum class MouseButton {
+	Left = 0,
+	Right = 1,
+	Middle = 2,
+	Button0 = 0,
+	Button1 = 1,
+	Button2 = 2,
+	Button3 = 3,
+	Button4 = 4,
+	Button5 = 5,
+	Button6 = 6,
+	Button7 = 7,
+	Button8 = 8,
+	LastButton = Button8,
+};
+
+enum class Joystick {
+	Joystick0 = 0,
+	Joystick1 = 1,
+	Joystick2 = 2,
+	Joystick3 = 3,
+	Joystick4 = 4,
+	Joystick5 = 5,
+	Joystick6 = 6,
+	Joystick7 = 7,
+	Joystick8 = 8,
+	Joystick9 = 9,
+	Joystick10 = 10,
+	Joystick11 = 11,
+	Joystick12 = 12,
+	Joystick13 = 13,
+	Joystick14 = 14,
+	Joystick15 = 15,
+	LastJoystick = Joystick15,
+};
+
 struct MouseScrollDelta {
+	double x = 0.0;
+	double y = 0.0;
+};
+
+struct MousePosition {
 	double x = 0.0;
 	double y = 0.0;
 };
@@ -139,11 +181,28 @@ struct Event {
 		KeyPress,
 		KeyRelease,
 		MouseScroll,
+		MouseButtonPress,
+		MouseButtonRelease,
+		MouseMove,
+		JoystickConnected,
+		JoystickDisconnected,
+		GamepadButtonPress,
+		GamepadButtonRelease,
+		GamepadAxisChange,
 	};
 
 	union {
 		Key key = Key::Unknown;
 		MouseScrollDelta mouseScrollDelta;
+		MouseButton mouseButton;
+		MousePosition mousePosition;
+		struct {
+			Joystick joystick;
+			union {
+				GamepadButton gamepadButton;
+				GamepadAxisChange gamepadAxisChange;
+			};
+		};
 	};
 
 	Type type;

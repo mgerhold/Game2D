@@ -175,6 +175,7 @@
     <ClCompile Include="Font.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="Image.cpp" />
+    <ClCompile Include="GamepadState.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Music.cpp" />
     <ClCompile Include="ScopedProfiler.cpp" />
@@ -202,6 +203,7 @@
     <ClInclude Include="Event.h" />
     <ClInclude Include="EventHandler.h" />
     <ClInclude Include="Font.h" />
+    <ClInclude Include="GamepadState.h" />
     <ClInclude Include="Music.h" />
     <ClInclude Include="Rect.h" />
     <ClInclude Include="NonCopyable.h" />

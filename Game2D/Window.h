@@ -4,6 +4,7 @@
 #include <GLFW/glfw3.h>
 #include <glm/mat4x4.hpp>
 #include <glm/vec2.hpp>
+#include <glm/vec3.hpp>
 #include <string>
 #include "NonCopyable.h"
 #include "Color.h"
@@ -39,10 +40,14 @@ public:
 	Event						pollEvent();
 	void						setKeyRepeat(bool repeat);
 	bool						isKeyPressed(Key key) const;
+	bool						isMouseButtonPressed(MouseButton mouseButton) const;
+	glm::vec2					getMousePosition() const;
 	void						setTitle(const std::string& title);
 	void						makeContextCurrent() const;
 	void						draw(const Drawable& drawable, const Camera& camera = Camera()) const;
 	void						draw(const Drawable& drawable, RenderStates states) const;
+	glm::vec2					windowToWorldCoords(glm::vec2 windowCoords, const Camera& camera = Camera()) const;
+	glm::vec2					worldToWindowCoords(glm::vec2 worldCoords, const Camera& camera = Camera()) const;
 	// static methods
 	static void					processEvents();
 

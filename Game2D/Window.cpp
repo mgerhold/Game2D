@@ -144,6 +144,14 @@ bool Window::isKeyPressed(Key key) const {
 	return mEventHandler.isKeyPressed(key);
 }
 
+bool Window::isMouseButtonPressed(MouseButton mouseButton) const {
+	return mEventHandler.isMouseButtonPressed(mouseButton);
+}
+
+glm::vec2 Window::getMousePosition() const {
+	return mEventHandler.getMousePosition();
+}
+
 void Window::setTitle(const std::string& title) {
 	glfwSetWindowTitle(mWindowPtr, title.c_str());
 }
@@ -161,13 +169,24 @@ void Window::draw(const Drawable& drawable, const Camera& camera) const {
 
 void Window::draw(const Drawable& drawable, RenderStates states) const {
 	makeContextCurrent();
-	//states.shader->use();
-	//states.shader->setUniformMat4fv("uProjectionMatrix", mProjectionMatrix);
 	drawable.draw(*this, states);
 }
 
+glm::vec2 Window::windowToWorldCoords(glm::vec2 windowCoords, const Camera& camera) const {
+	windowCoords = glm::vec2(windowCoords.x * 2.f / getSize().x - 1.f, windowCoords.y * 2.f / getSize().y - 1.f);
+	glm::vec4 homogeneous = glm::inverse(camera.getMatrix()) * glm::inverse(mProjectionMatrix) * glm::vec4(windowCoords.x, windowCoords.y, 0.f, 1.f);
+	return glm::vec2(homogeneous.x, homogeneous.y);
+}
+
+glm::vec2 Window::worldToWindowCoords(glm::vec2 worldCoords, const Camera& camera) const {
+	glm::vec4 homogeneous = mProjectionMatrix * camera.getMatrix() * glm::vec4(worldCoords.x, worldCoords.y, 0.f, 1.f);
+	return glm::vec2(homogeneous.x, homogeneous.y);
+}
+
 void Window::processEvents() {
+	// TODO: move this outside of the window class and into an application class
 	glfwPollEvents();
+	EventHandler::updateJoysticks();
 }
 
 void Window::getContext() const {

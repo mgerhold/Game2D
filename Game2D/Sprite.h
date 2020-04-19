@@ -16,6 +16,7 @@ public:
 	void					setTexture(const Texture& texture);
 	void					setDefaultTextureRect();
 	void					setTextureRect(const IntRect& rect);
+	void					setTiling(int x, int y);
 	void					setColor(const Color& color);
 	virtual glm::ivec2		getSize() const override;
 

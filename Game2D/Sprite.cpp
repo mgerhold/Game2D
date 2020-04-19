@@ -26,7 +26,7 @@ void Sprite::setDefaultTextureRect() {
 void Sprite::setTextureRect(const IntRect& rect) {
 	SCOPED_PROFILER;
 	mTextureRect = rect;
-	glm::ivec2 size = mTexture->getSize();
+	/*glm::ivec2 size = mTexture->getSize();
 	if (mTextureRect.left < 0)
 		mTextureRect.left = 0;
 	if (mTextureRect.right > size.x)
@@ -34,8 +34,13 @@ void Sprite::setTextureRect(const IntRect& rect) {
 	if (mTextureRect.bottom < 0)
 		mTextureRect.bottom = 0;
 	if (mTextureRect.top > size.y)
-		mTextureRect.top = size.y;
+		mTextureRect.top = size.y;*/
 	mVertexArrayNeedsUpdate = true;
+}
+
+void Sprite::setTiling(int x, int y) {
+	assert(x >= 1 && y >= 1);
+	setTextureRect(IntRect(0, 0, x * getWidth(), y * getHeight()));
 }
 
 void Sprite::setColor(const Color& color) {
