@@ -34,9 +34,23 @@ Window::Window(
 	, mInitialHeight(height)
 	, mProjectionMatrix(glm::mat4())
 {
-	// initialize GLFW if not done already
-	if (!sGlfwAndGladInitialized && !glfwInit())
-		throw std::runtime_error("Failed to initialize GLFW!");
+	if (!sGlfwAndGladInitialized) {
+		int result = GLFW_TRUE;
+		try {
+			result = glfwInit();
+		}
+		catch (...) {
+			try {
+				std::exception_ptr eptr = std::current_exception();
+				if (eptr)
+					std::rethrow_exception(eptr);
+			} catch (const std::exception& e) {
+				std::cout << "EXCEPTION: " << e.what() << "\n";
+			}			
+		}
+		if (result != GLFW_TRUE)
+			throw std::runtime_error("Failed to initialize GLFW!");
+	}
 
 	// set window hints before creating the window
 	if (multisamplingSamples > 0)
@@ -49,6 +63,9 @@ Window::Window(
 	mWindowPtr = glfwCreateWindow(width, height, title.c_str(), nullptr, nullptr);
 	if (!mWindowPtr)
 		throw std::runtime_error("Failed to create window!");
+
+	// center window
+	centerWindow(mWindowPtr, getBestMonitor(mWindowPtr));
 
 	// set context to current
 	sWindowWithContext = this;
@@ -206,6 +223,68 @@ void Window::calculateProjectionMatrix() {
 		-static_cast<GLfloat>(height / 2),
 		static_cast<GLfloat>(height / 2)
 	);
+}
+
+void Window::centerWindow(GLFWwindow* window, GLFWmonitor* monitor) const {
+	// taken from https://vallentin.dev/2014/02/07/glfw-center-window
+	if (!monitor)
+		return;
+
+	const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+	if (!mode)
+		return;
+
+	int monitorX, monitorY;
+	glfwGetMonitorPos(monitor, &monitorX, &monitorY);
+
+	int windowWidth, windowHeight;
+	glfwGetWindowSize(window, &windowWidth, &windowHeight);
+
+	glfwSetWindowPos(window,
+		monitorX + (mode->width - windowWidth) / 2,
+		monitorY + (mode->height - windowHeight) / 2);
+}
+
+GLFWmonitor* Window::getBestMonitor(GLFWwindow* window) const {
+	// taken from https://vallentin.dev/2014/02/07/glfw-center-window
+	int monitorCount;
+	GLFWmonitor** monitors = glfwGetMonitors(&monitorCount);
+
+	if (!monitors)
+		return NULL;
+
+	int windowX, windowY, windowWidth, windowHeight;
+	glfwGetWindowSize(window, &windowWidth, &windowHeight);
+	glfwGetWindowPos(window, &windowX, &windowY);
+
+	GLFWmonitor* bestMonitor = NULL;
+	int bestArea = 0;
+
+	for (int i = 0; i < monitorCount; ++i) {
+		GLFWmonitor* monitor = monitors[i];
+
+		int monitorX, monitorY;
+		glfwGetMonitorPos(monitor, &monitorX, &monitorY);
+
+		const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+		if (!mode)
+			continue;
+
+		int areaMinX = std::max(windowX, monitorX);
+		int areaMinY = std::max(windowY, monitorY);
+
+		int areaMaxX = std::min(windowX + windowWidth, monitorX + mode->width);
+		int areaMaxY = std::min(windowY + windowHeight, monitorY + mode->height);
+
+		int area = (areaMaxX - areaMinX) * (areaMaxY - areaMinY);
+
+		if (area > bestArea) {
+			bestArea = area;
+			bestMonitor = monitor;
+		}
+	}
+
+	return bestMonitor;
 }
 
 void Window::swapBuffers() const {

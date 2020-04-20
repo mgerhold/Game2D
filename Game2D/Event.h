@@ -194,8 +194,10 @@ struct Event {
 	union {
 		Key key = Key::Unknown;
 		MouseScrollDelta mouseScrollDelta;
-		MouseButton mouseButton;
-		MousePosition mousePosition;
+		struct {
+			MouseButton mouseButton;
+			MousePosition mousePosition;
+		};
 		struct {
 			Joystick joystick;
 			union {

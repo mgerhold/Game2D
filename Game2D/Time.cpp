@@ -2,7 +2,7 @@
 #include <cmath>
 
 Time Time::seconds(float seconds) {
-	return Time(static_cast<long long>(seconds) * 1000000LL);
+	return Time(static_cast<long long>(static_cast<double>(seconds) * 1000000.0));
 }
 
 Time Time::milliseconds(long milliseconds) {

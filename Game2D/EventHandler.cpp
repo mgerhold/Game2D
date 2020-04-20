@@ -237,6 +237,9 @@ void EventHandler::scrollCallback(GLFWwindow* window, double xoffset, double yof
 void EventHandler::mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
 	Event e;
 	e.mouseButton = static_cast<MouseButton>(button);
+	auto position = getMousePosition();
+	e.mousePosition.x = position.x;
+	e.mousePosition.y = position.y;
 	if (action == GLFW_PRESS) {
 		e.type = Event::Type::MouseButtonPress;
 		mPressedMouseButtons.insert(e.mouseButton);

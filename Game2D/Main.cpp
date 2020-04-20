@@ -20,6 +20,7 @@
 #include "Sound.h"
 #include "ResourceHolder.h"
 #include "Camera.h"
+#include "Animation.h"
 
 #include <memory>
 
@@ -32,6 +33,8 @@ enum class TextureID {
 	Raptor,
 	FMODLogo,
 	Checkerboard,
+	Explosion,
+	Guybrush,
 };
 
 enum class SoundID {
@@ -45,8 +48,8 @@ enum class SoundID {
 int main() {
 	try {
 		Window window(
-			800,
-			600,
+			1024,
+			768,
 			APPLICATION_TITLE,
 			4,		// multisampling
 			false,	// vertical sync
@@ -69,6 +72,9 @@ int main() {
 		textureHolder.load(TextureID::Raptor, "textures/raptor.png");
 		textureHolder.load(TextureID::FMODLogo, "textures/fmod_logo.png");
 		textureHolder.load(TextureID::Checkerboard, "textures/checkerboard.jpg");
+		textureHolder.load(TextureID::Explosion, "textures/explosion.png");
+		textureHolder.load(TextureID::Guybrush, "textures/guybrush.png");
+		textureHolder.get(TextureID::Guybrush).setTextureFiltering(Texture::Filtering::Nearest);
 		textureHolder.get(TextureID::Eagle).setTextureFiltering(Texture::Filtering::Nearest);
 		textureHolder.get(TextureID::Raptor).setTextureFiltering(Texture::Filtering::Nearest);
 		textureHolder.get(TextureID::FMODLogo).setTextureFiltering(Texture::Filtering::Nearest);
@@ -90,6 +96,14 @@ int main() {
 		checkerboard.setTexture(textureHolder.get(TextureID::Checkerboard));
 		checkerboard.setTiling(4, 4);
 		checkerboard.centerOrigin();
+
+		std::vector<Animation> animations;
+		Animation guybrush;
+		guybrush.setTexture(textureHolder.get(TextureID::Guybrush));
+		guybrush.generateAnimationStates(6, 1, Time::seconds(0.2f));
+		guybrush.centerOrigin();
+		guybrush.setLooping(true);
+		guybrush.setPosition(0.f, -300.f);
 
 		// text test
 		Font font;
@@ -144,6 +158,17 @@ int main() {
 
 			spriteEagle.setRotation(rotation);
 
+			// update animations
+			for (auto& animation : animations)
+				animation.update();
+			guybrush.update();
+			// erase animations that are not playing anymore
+			animations.erase(std::remove_if(animations.begin(), animations.end(), [](const auto& animation) -> bool {
+					return !animation.isPlaying();
+				}),
+				animations.end()
+			);
+
 			text.setScale(std::sin(2.0f * elapsed) * 1.5f + 2.f, 1.2f);
 			text.setRotation(0.3f * rotation);
 
@@ -171,7 +196,6 @@ int main() {
 			movement = glm::vec2(1.f, 0.f) * EventHandler::getGamepadAxis(Joystick::Joystick0, GamepadAxis::LeftX)
 				+ glm::vec2(0.f, -1.f) * EventHandler::getGamepadAxis(Joystick::Joystick0, GamepadAxis::LeftY);
 			if (glm::length(movement) > 0.2f) {
-				//std::cout << "\tmovement: " << glm::to_string(movement) << ", length = " << glm::length(movement) << "\n";
 				movement = movement * static_cast<float>(glm::length(movement)) / std::sqrt(2.f) * movementSpeed;
 				camera.move(movement * dt);
 			}
@@ -196,25 +220,57 @@ int main() {
 					case Event::Type::JoystickDisconnected:
 						std::cout << "Joystick/Gamepad " << static_cast<int>(e.joystick) << " disconnected\n";
 						break;
-					/*case Event::Type::GamepadButtonPress:
-						std::cout << "Gamepad " << EventHandler::getGamepadName(e.joystick) << " button " << static_cast<int>(e.gamepadButton) << " has been pressed\n";
-						break;
-					case Event::Type::GamepadButtonRelease:
-						std::cout << "Gamepad " << EventHandler::getGamepadName(e.joystick) << " button " << static_cast<int>(e.gamepadButton) << " has been released\n";
-						break;
-					case Event::Type::GamepadAxisChange:
-						std::cout << "Gamepad " << EventHandler::getGamepadName(e.joystick) << " axis " << static_cast<int>(e.gamepadAxisChange.axis) << " changed to " << e.gamepadAxisChange.value << "\n";
-						break;*/
+					case Event::Type::GamepadButtonPress:
+						switch (e.gamepadButton) {
+							case GamepadButton::A:
+							{
+								Sound drum;
+								drum.setSoundBuffer(soundHolder.get(SoundID::Kick));
+								AudioSystem::playSound(drum);
+								break;
+							}
+							case GamepadButton::X:
+							{
+								Sound drum;
+								drum.setSoundBuffer(soundHolder.get(SoundID::Snare));
+								AudioSystem::playSound(drum);
+								break;
+							}
+							case GamepadButton::RightBumper:
+							{
+								Sound drum;
+								drum.setSoundBuffer(soundHolder.get(SoundID::Crash));
+								AudioSystem::playSound(drum);
+								break;
+							}
+							case GamepadButton::Y:
+							{
+								Sound sound;
+								sound.setSoundBuffer(soundHolder.get(SoundID::Crow));
+								AudioSystem::playSound(sound);
+								break;
+							}
+						}
+						break;					
 					case Event::Type::MouseScroll:
 						camera.zoom(1.f + 0.1f * static_cast<float>(e.mouseScrollDelta.y));
+						break;
+					case Event::Type::MouseButtonPress:
+						if (e.mouseButton == MouseButton::Left) {
+							glm::vec2 position = glm::vec2(static_cast<float>(e.mousePosition.x), static_cast<float>(e.mousePosition.y));
+							position = window.windowToWorldCoords(position, camera);
+							Animation explosion;
+							explosion.setTexture(textureHolder.get(TextureID::Explosion));
+							explosion.generateAnimationStates(4, 4, Time::seconds(0.035f));
+							explosion.setPosition(position.x, position.y);
+							explosion.centerOrigin();
+							animations.push_back(explosion);
+						}
 						break;
 					case Event::Type::KeyPress:
 						switch (e.key) {
 							case Key::Escape:
 								window.setWindowShouldClose(true);
-								break;							
-							case Key::P:
-								music.play();
 								break;
 							case Key::C:
 							{								
@@ -275,6 +331,10 @@ int main() {
 			window.draw(spriteEagle, camera);
 			window.draw(text, camera);
 			window.draw(text2, camera);
+
+			window.draw(guybrush, camera);
+			for (const auto& animation : animations)
+				window.draw(animation, camera);
 
 			window.draw(fmodSprite);
 			

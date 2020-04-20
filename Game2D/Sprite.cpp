@@ -5,11 +5,12 @@
 #include "Utility.h"
 
 Sprite::Sprite()
-	: mVertexArray(PrimitiveType::Quads, DrawType::Dynamic)
-	, mTexture(nullptr)
+	: mTexture(nullptr)
 	, mVertexArrayNeedsUpdate(false)
 	, mColor(Color(1.f, 1.f, 1.f, 1.f))
-{}
+{
+	mVertexArray = std::make_shared<VertexArray>(PrimitiveType::Quads, DrawType::Dynamic);
+}
 
 void Sprite::setTexture(const Texture& texture) {
 	SCOPED_PROFILER;
@@ -62,11 +63,11 @@ void Sprite::updateVertexArray() const {
 	float maxU = static_cast<float>(mTextureRect.right) / static_cast<float>(size.x);
 	float minV = static_cast<float>(mTextureRect.bottom) / static_cast<float>(size.y);
 	float maxV = static_cast<float>(mTextureRect.top) / static_cast<float>(size.y);
-	mVertexArray.clear();
-	mVertexArray.append(Vertex(glm::vec2(0.f, 0.f), mColor, glm::vec2(minU, minV)));
-	mVertexArray.append(Vertex(glm::vec2(mTextureRect.right - mTextureRect.left, 0.f), mColor, glm::vec2(maxU, minV)));
-	mVertexArray.append(Vertex(glm::vec2(mTextureRect.right - mTextureRect.left, mTextureRect.top - mTextureRect.bottom), mColor, glm::vec2(maxU, maxV)));
-	mVertexArray.append(Vertex(glm::vec2(0.f, mTextureRect.top - mTextureRect.bottom), mColor, glm::vec2(minU, maxV)));
+	mVertexArray->clear();
+	mVertexArray->append(Vertex(glm::vec2(0.f, 0.f), mColor, glm::vec2(minU, minV)));
+	mVertexArray->append(Vertex(glm::vec2(mTextureRect.right - mTextureRect.left, 0.f), mColor, glm::vec2(maxU, minV)));
+	mVertexArray->append(Vertex(glm::vec2(mTextureRect.right - mTextureRect.left, mTextureRect.top - mTextureRect.bottom), mColor, glm::vec2(maxU, maxV)));
+	mVertexArray->append(Vertex(glm::vec2(0.f, mTextureRect.top - mTextureRect.bottom), mColor, glm::vec2(minU, maxV)));
 	mVertexArrayNeedsUpdate = false;
 }
 
@@ -76,5 +77,5 @@ void Sprite::draw(const Window& window, RenderStates states) const {
 		updateVertexArray();
 	states.texture = mTexture;
 	states.transform *= getTransform();
-	window.draw(mVertexArray, states);
+	window.draw(*mVertexArray, states);
 }

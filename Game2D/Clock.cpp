@@ -15,3 +15,7 @@ Time Clock::getElapsedTime() const {
 	auto duration = std::chrono::duration_cast<std::chrono::microseconds>(now - mStart).count();
 	return Time::microseconds(duration);
 }
+
+void Clock::setElapsedTime(Time time) {
+	mStart = std::chrono::steady_clock::now() - std::chrono::microseconds(time.asMicroseconds());
+}

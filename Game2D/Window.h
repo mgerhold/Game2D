@@ -54,6 +54,8 @@ public:
 private:
 	void						getContext() const;
 	void						calculateProjectionMatrix();
+	void						centerWindow(GLFWwindow* window, GLFWmonitor* monitor) const;
+	GLFWmonitor*				getBestMonitor(GLFWwindow* window) const;
 
 private:
 	GLFWwindow*					mWindowPtr;

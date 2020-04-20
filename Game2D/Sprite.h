@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include "Drawable.h"
 #include "Transformable.h"
 #include "Texture.h"
@@ -26,7 +27,7 @@ private:
 	virtual void			draw(const Window& window, RenderStates states) const override;
 	const Texture*			mTexture;
 	IntRect					mTextureRect;
-	mutable VertexArray		mVertexArray;
+	mutable std::shared_ptr<VertexArray>		mVertexArray;
 	mutable bool			mVertexArrayNeedsUpdate;
 	Color					mColor;
 };

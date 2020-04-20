@@ -55,8 +55,8 @@ void Camera::rotate(float radians) {
 
 void Camera::calculateMatrix() const {
 	mMatrix = glm::mat4(1.f);
-	mMatrix = glm::translate(mMatrix, glm::vec3(-mPosition.x, -mPosition.y, 0.f));
 	mMatrix = glm::scale(mMatrix, glm::vec3(mZoom, mZoom, 1.f));
 	mMatrix = glm::rotate(mMatrix, mRotation, glm::vec3(0.f, 0.f, 1.f));
+	mMatrix = glm::translate(mMatrix, glm::vec3(-mPosition.x, -mPosition.y, 0.f));
 	mNeedsRecalculation = false;
 }
