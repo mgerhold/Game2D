@@ -2,6 +2,8 @@
 #include <string>
 #include <vector>
 #include <list>
+#include <time.h>
+#include <stdlib.h>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <glm/gtx/string_cast.hpp>
@@ -21,6 +23,9 @@
 #include "ResourceHolder.h"
 #include "Camera.h"
 #include "Animation.h"
+#include "Container.h"
+#include "Label.h"
+#include "Button.h"
 
 #include <memory>
 
@@ -35,6 +40,9 @@ enum class TextureID {
 	Checkerboard,
 	Explosion,
 	Guybrush,
+	ButtonNormal,
+	ButtonSelected,
+	ButtonActive,
 };
 
 enum class SoundID {
@@ -47,6 +55,9 @@ enum class SoundID {
 
 int main() {
 	try {
+		// TODO: Remove!
+		srand((unsigned)time(nullptr));
+
 		Window window(
 			1024,
 			768,
@@ -74,6 +85,9 @@ int main() {
 		textureHolder.load(TextureID::Checkerboard, "textures/checkerboard.jpg");
 		textureHolder.load(TextureID::Explosion, "textures/explosion.png");
 		textureHolder.load(TextureID::Guybrush, "textures/guybrush.png");
+		textureHolder.load(TextureID::ButtonNormal, "textures/button_normal.png");
+		textureHolder.load(TextureID::ButtonActive, "textures/button_active.png");
+		textureHolder.load(TextureID::ButtonSelected, "textures/button_selected.png");
 		textureHolder.get(TextureID::Guybrush).setTextureFiltering(Texture::Filtering::Nearest);
 		textureHolder.get(TextureID::Eagle).setTextureFiltering(Texture::Filtering::Nearest);
 		textureHolder.get(TextureID::Raptor).setTextureFiltering(Texture::Filtering::Nearest);
@@ -143,6 +157,30 @@ int main() {
 
 		Camera camera;
 
+		// GUI
+		GUI::Container guiContainer;
+		auto button = std::make_shared<GUI::Button>();
+		button->setString("Explode!");
+		button->setFont(font, 24);		
+		button->setNormalTexture(textureHolder.get(TextureID::ButtonNormal));
+		button->setSelectedTexture(textureHolder.get(TextureID::ButtonSelected));
+		button->setActiveTexture(textureHolder.get(TextureID::ButtonActive));
+		button->setCallbackFunc([&window, &textureHolder, &animations]() {
+			for (float x = -400.f; x <= 400.f; x += 200.f) {
+				for (float y = -400.f; y <= 400.f; y += 200.f) {
+					Animation explosion;
+					explosion.setTexture(textureHolder.get(TextureID::Explosion));
+					explosion.generateAnimationStates(4, 4, Time::milliseconds(rand() % 100 + 10));
+					explosion.setPosition(x + (rand() % 100 - 50), y + (rand() % 100 - 50));
+					explosion.setRotation(glm::radians(static_cast<float>(rand() % 360)));
+					explosion.setScale(glm::vec2(static_cast<float>(rand() % 200) / 150.f + 0.5f));
+					explosion.centerOrigin();
+					animations.push_back(explosion);
+				}
+			}			
+		});
+		guiContainer.pack(button);
+
 		while (!window.shouldClose()) {
 			// update
 			AudioSystem::update();
@@ -172,10 +210,12 @@ int main() {
 			text.setScale(std::sin(2.0f * elapsed) * 1.5f + 2.f, 1.2f);
 			text.setRotation(0.3f * rotation);
 
+			// set static positions
 			fmodSprite.setPosition(
 				static_cast<float>(-window.getSize().x / 2 + 10),
 				static_cast<float>(-window.getSize().y / 2 + 10)
 			);
+			button->setPosition(window.getSize().x / 2.f - 20.f - button->getWidth(), -window.getSize().y / 2.f + 20.f);
 
 			// handle real-time input
 			static constexpr float movementSpeed = 600.f;
@@ -213,6 +253,8 @@ int main() {
 			Window::processEvents();
 			while (window.hasEvent()) {
 				Event e = window.pollEvent();
+				if (guiContainer.handleEvent(e, window))
+					continue;
 				switch (e.type) {
 					case Event::Type::JoystickConnected:
 						std::cout << "Joystick/Gamepad " << static_cast<int>(e.joystick) << " connected\n";
@@ -337,6 +379,9 @@ int main() {
 				window.draw(animation, camera);
 
 			window.draw(fmodSprite);
+
+			// render GUI
+			window.draw(guiContainer);
 			
 			window.swapBuffers();
 			renderedFrames++;

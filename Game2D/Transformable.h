@@ -2,6 +2,7 @@
 
 #include <glm/vec2.hpp>
 #include "Transform.h"
+#include "Rect.h"
 
 class Transformable {
 public:
@@ -22,6 +23,7 @@ public:
 	int					getWidth() const;
 	int					getHeight() const;
 	virtual glm::ivec2	getSize() const;
+	FloatRect			getLocalBounds() const;
 
 private:
 	void				recalculateTransform() const;

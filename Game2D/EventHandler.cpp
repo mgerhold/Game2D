@@ -218,10 +218,10 @@ void EventHandler::keyCallback(GLFWwindow* window, int key, int scancode, int ac
 		mEventQueue.push(e);
 		if (e.type == Event::Type::KeyPress)
 			mPressedKeys.insert(e.key);
-		else {
+		else { // key release
 			auto find = mPressedKeys.find(e.key);
-			assert(find != mPressedKeys.end());
-			mPressedKeys.erase(find);
+			if (find != mPressedKeys.end())
+				mPressedKeys.erase(find);
 		}
 	}
 }
@@ -246,8 +246,8 @@ void EventHandler::mouseButtonCallback(GLFWwindow* window, int button, int actio
 	} else if (action == GLFW_RELEASE) {
 		e.type = Event::Type::MouseButtonRelease;
 		auto find = mPressedMouseButtons.find(e.mouseButton);
-		assert(find != mPressedMouseButtons.end());
-		mPressedMouseButtons.erase(find);
+		if (find != mPressedMouseButtons.end())
+			mPressedMouseButtons.erase(find);
 	}
 	mEventQueue.push(e);
 }

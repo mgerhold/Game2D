@@ -82,6 +82,15 @@ glm::ivec2 Transformable::getSize() const {
 	return glm::ivec2(0, 0);
 }
 
+FloatRect Transformable::getLocalBounds() const {
+	return FloatRect(
+		mPosition.x - mOrigin.x,
+		mPosition.y - mOrigin.y,
+		mPosition.x + getWidth() - mOrigin.x,
+		mPosition.y + getHeight() - mOrigin.y
+	);
+}
+
 void Transformable::recalculateTransform() const {
 	SCOPED_PROFILER;
 	mTransform = Transform::Identity;
