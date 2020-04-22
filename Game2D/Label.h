@@ -1,11 +1,11 @@
 #pragma once
 
-#include "Component.h"
+#include "GUIComponent.h"
 #include "Text.h"
 
 namespace GUI {
 
-	class Label : public Component {
+	class Label : public GUIComponent {
 	public:
 		virtual bool		isSelectable() const;
 		virtual void		draw(const Window& window, RenderStates states) const;

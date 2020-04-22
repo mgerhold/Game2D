@@ -26,6 +26,11 @@
 #include "Container.h"
 #include "Label.h"
 #include "Button.h"
+#include "EntityContainer.h"
+#include "TestComponent.h"
+#include "SpriteRenderer.h"
+#include "AnimationRenderer.h"
+#include "TextRenderer.h"
 
 #include <memory>
 
@@ -117,6 +122,7 @@ int main() {
 		guybrush.generateAnimationStates(6, 1, Time::seconds(0.2f));
 		guybrush.centerOrigin();
 		guybrush.setLooping(true);
+		guybrush.setScale(-1.f, 1.f);
 		guybrush.setPosition(0.f, -300.f);
 
 		// text test
@@ -157,6 +163,49 @@ int main() {
 
 		Camera camera;
 
+		// entity component test
+		EntityContainer entityContainer;
+
+		auto rootEntity = std::make_unique<Entity>();
+		rootEntity->setPosition(300.f, 200.f);
+		//rootEntity->setScale(2.f, 1.f);
+		rootEntity->setRotation(glm::radians(25.f));
+		Entity* rootEntityPtr = rootEntity.get();
+
+		auto spriteEntity = std::make_unique<Entity>();
+		auto spriteRenderer = std::make_unique<SpriteRenderer>();
+		spriteRenderer->getSprite().setTexture(textureHolder.get(TextureID::Guybrush));
+		spriteRenderer->getSprite().centerOrigin();
+		spriteEntity->addComponent(std::move(spriteRenderer));
+		spriteEntity->setScale(-1.f, 1.f);
+		spriteEntity->setParent(*rootEntity);
+
+		auto animationEntity = std::make_unique<Entity>();
+		auto animationRenderer = std::make_unique<AnimationRenderer>();
+		animationRenderer->getAnimation().setTexture(textureHolder.get(TextureID::Guybrush));
+		animationRenderer->getAnimation().generateAnimationStates(6, 1, Time::seconds(0.2f));
+		animationRenderer->getAnimation().centerOrigin();
+		animationRenderer->getAnimation().setLooping(true);
+		animationEntity->addComponent(std::move(animationRenderer));
+		animationEntity->setPosition(0.f, -50.f);
+		animationEntity->setParent(*rootEntity);
+
+		auto textEntity = std::make_unique<Entity>();
+		auto textRenderer = std::make_unique<TextRenderer>();
+		textRenderer->getText().setFont(font, 48);
+		textRenderer->getText().setString("Entity Component Model");
+		textRenderer->getText().centerOrigin();
+		textEntity->addComponent(std::move(textRenderer));
+		textEntity->setRotation(glm::radians(-90.f));
+		textEntity->centerOrigin();
+		textEntity->setParent(*rootEntity);
+
+		entityContainer.add(std::move(rootEntity));
+		entityContainer.add(std::move(spriteEntity));
+		entityContainer.add(std::move(animationEntity));
+		entityContainer.add(std::move(textEntity));
+		entityContainer.awake();
+
 		// GUI
 		GUI::Container guiContainer;
 		auto button = std::make_shared<GUI::Button>();
@@ -190,6 +239,8 @@ int main() {
 			float dt = elapsed - lastElapsed;
 			lastElapsed = elapsed;
 
+			entityContainer.update(Time::seconds(dt));
+
 			float rotation = glm::radians(80.f * elapsed);
 			spriteRaptor.setRotation(-2.f * rotation);
 			spriteRaptor.setScale(std::sin(2.5f * elapsed) * 2.5f + 3.5f, 2.f);
@@ -216,6 +267,8 @@ int main() {
 				static_cast<float>(-window.getSize().y / 2 + 10)
 			);
 			button->setPosition(window.getSize().x / 2.f - 20.f - button->getWidth(), -window.getSize().y / 2.f + 20.f);
+			auto mousePos = window.windowToWorldCoords(window.getMousePosition(), camera);
+			rootEntityPtr->setPosition(mousePos.x, mousePos.y);
 
 			// handle real-time input
 			static constexpr float movementSpeed = 600.f;
@@ -378,9 +431,10 @@ int main() {
 			for (const auto& animation : animations)
 				window.draw(animation, camera);
 
-			window.draw(fmodSprite);
+			window.draw(entityContainer, camera);
 
 			// render GUI
+			window.draw(fmodSprite);
 			window.draw(guiContainer);
 			
 			window.swapBuffers();

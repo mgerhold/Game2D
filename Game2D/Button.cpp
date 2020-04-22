@@ -1,7 +1,7 @@
 #include "Button.h"
 
 GUI::Button::Button()
-	: Component()
+	: GUIComponent()
 	, mTextureNormal(nullptr)
 	, mTextureSelected(nullptr)
 	, mTextureActive(nullptr)

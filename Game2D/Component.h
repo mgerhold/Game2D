@@ -1,35 +1,34 @@
 #pragma once
 
-#include "Event.h"
 #include "Drawable.h"
-#include "Transformable.h"
-#include "NonCopyable.h"
-#include "Window.h"
+#include <memory>
+#include "Time.h"
 
-namespace GUI {
+class Entity;
 
-	class Component 
-		: public Drawable
-		, public Transformable
-		, private NonCopyable
-	{
-	public:
-		using Ptr = std::shared_ptr<Component>;
+class Component : public Drawable {
+public:
+	using Ptr = std::unique_ptr<Component>;
 
-	public:
-						Component();
-		virtual			~Component() = default;
-		virtual bool	isSelectable() const = 0;
-		bool			isSelected() const;
-		virtual void	select();
-		virtual void	deselect();
-		virtual void	activate();
-		virtual void	deactivate();
-		bool			isActive() const;
-		virtual bool	handleEvent(const Event& event, const Window& window);
-	private:
-		bool			mIsSelected;
-		bool			mIsActive;
-	};
+public:
+	Component();
+	void update(Time dt);
+	void awake();
 
-}
+protected:
+	const Entity* getEntity() const;
+	template<typename T>
+	T* getComponent() const;
+
+private:
+	virtual void draw(const Window& window, RenderStates states) const final;
+	virtual void onAwake();
+	virtual void onDraw(const Window& window, RenderStates states) const;
+	virtual void onUpdate(Time dt);
+	void setEntity(const Entity* entity);
+
+private:
+	const Entity* mEntity;
+
+	friend class Entity;
+};

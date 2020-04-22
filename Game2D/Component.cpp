@@ -1,35 +1,43 @@
 #include "Component.h"
+#include "Entity.h"
 
-GUI::Component::Component()
-	: mIsSelected(false)
-	, mIsActive(false)
+void Component::draw(const Window& window, RenderStates states) const {
+	onDraw(window, states);
+}
+
+Component::Component()
+	: mEntity(nullptr)
 {}
 
-bool GUI::Component::isSelected() const {
-	return mIsSelected;
+void Component::update(Time dt) {
+	onUpdate(dt);
 }
 
-void GUI::Component::select() {
-	if (isSelectable())
-		mIsSelected = true;
+void Component::awake() {
+	onAwake();
 }
 
-void GUI::Component::deselect() {
-	mIsSelected = false;
+const Entity* Component::getEntity() const {
+	return mEntity;
 }
 
-void GUI::Component::activate() {
-	mIsActive = true;
+void Component::onAwake()
+{}
+
+void Component::onDraw(const Window& window, RenderStates states) const
+{}
+
+void Component::onUpdate(Time dt)
+{}
+
+void Component::setEntity(const Entity * entity) {
+	mEntity = entity;
 }
 
-void GUI::Component::deactivate() {
-	mIsActive = false;
-}
-
-bool GUI::Component::isActive() const {
-	return mIsActive;
-}
-
-bool GUI::Component::handleEvent(const Event& event, const Window& window) {
-	return false;
+template<typename T>
+T* Component::getComponent() const {
+	if (!mEntity)
+		return nullptr;
+	auto result = (*mEntity).template getComponent<T>();
+	return result;
 }

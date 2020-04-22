@@ -1,16 +1,16 @@
 #pragma once
 
-#include "Component.h"
+#include "GUIComponent.h"
 #include <memory>
 
 namespace GUI {
 
-	class Container : public Component {
+	class Container : public GUIComponent {
 	public:
 		virtual bool		isSelectable() const;
 		virtual bool		handleEvent(const Event& event, const Window& window) override;
 		virtual void		draw(const Window& window, RenderStates states) const;
-		void				pack(Component::Ptr component);
+		void				pack(GUIComponent::Ptr component);
 
 	private:
 		std::vector<Ptr>	mChildren;

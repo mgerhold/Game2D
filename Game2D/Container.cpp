@@ -19,6 +19,6 @@ void GUI::Container::draw(const Window& window, RenderStates states) const {
 	}
 }
 
-void GUI::Container::pack(Component::Ptr component) {
+void GUI::Container::pack(GUIComponent::Ptr component) {
 	mChildren.push_back(component);
 }

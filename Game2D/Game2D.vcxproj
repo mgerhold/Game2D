@@ -171,13 +171,17 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Animation.cpp" />
+    <ClCompile Include="AnimationRenderer.cpp" />
     <ClCompile Include="AudioSystem.cpp" />
     <ClCompile Include="Button.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Clock.cpp" />
     <ClCompile Include="Color.cpp" />
     <ClCompile Include="Component.cpp" />
+    <ClCompile Include="EntityContainer.cpp" />
+    <ClCompile Include="GUIComponent.cpp" />
     <ClCompile Include="Container.cpp" />
+    <ClCompile Include="Entity.cpp" />
     <ClCompile Include="Event.cpp" />
     <ClCompile Include="EventHandler.cpp" />
     <ClCompile Include="Font.cpp" />
@@ -192,8 +196,11 @@
     <ClCompile Include="Sound.cpp" />
     <ClCompile Include="SoundBuffer.cpp" />
     <ClCompile Include="Sprite.cpp" />
+    <ClCompile Include="SpriteRenderer.cpp" />
     <ClCompile Include="stb_image.cpp" />
+    <ClCompile Include="TestComponent.cpp" />
     <ClCompile Include="Text.cpp" />
+    <ClCompile Include="TextRenderer.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="Time.cpp" />
     <ClCompile Include="Transform.cpp" />
@@ -205,14 +212,18 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Animation.h" />
+    <ClInclude Include="AnimationRenderer.h" />
     <ClInclude Include="AudioSystem.h" />
     <ClInclude Include="Button.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Clock.h" />
     <ClInclude Include="Color.h" />
     <ClInclude Include="Component.h" />
+    <ClInclude Include="EntityContainer.h" />
+    <ClInclude Include="GUIComponent.h" />
     <ClInclude Include="Container.h" />
     <ClInclude Include="Drawable.h" />
+    <ClInclude Include="Entity.h" />
     <ClInclude Include="Event.h" />
     <ClInclude Include="EventHandler.h" />
     <ClInclude Include="Font.h" />
@@ -229,7 +240,10 @@
     <ClInclude Include="Sound.h" />
     <ClInclude Include="SoundBuffer.h" />
     <ClInclude Include="Sprite.h" />
+    <ClInclude Include="SpriteRenderer.h" />
+    <ClInclude Include="TestComponent.h" />
     <ClInclude Include="Text.h" />
+    <ClInclude Include="TextRenderer.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="Time.h" />
     <ClInclude Include="Transform.h" />

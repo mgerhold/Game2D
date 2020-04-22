@@ -1,13 +1,13 @@
 #pragma once
 
-#include "Component.h"
+#include "GUIComponent.h"
 #include "Text.h"
 #include "Sprite.h"
 #include <functional>
 
 namespace GUI {
 
-	class Button : public Component {
+	class Button : public GUIComponent {
 	public:
 		using CallbackFunc = std::function<void(void)>;
 

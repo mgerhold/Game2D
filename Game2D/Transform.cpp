@@ -37,7 +37,7 @@ void Transform::rotate(float radians, glm::vec2 center) {
 }
 
 void Transform::scale(float x, float y) {
-	mMatrix = glm::scale(mMatrix, glm::vec3(x, y, 0.f));
+	mMatrix = glm::scale(mMatrix, glm::vec3(x, y, 1.f));
 }
 
 void Transform::scale(glm::vec2 scaling) {
@@ -45,9 +45,9 @@ void Transform::scale(glm::vec2 scaling) {
 }
 
 void Transform::scale(float x, float y, float centerX, float centerY) {
-	translate(-centerX, -centerY);
-	scale(x, y);
 	translate(centerX, centerY);
+	scale(x, y);
+	translate(-centerX, -centerY);
 }
 
 void Transform::scale(glm::vec2 scaling, glm::vec2 center) {
