@@ -211,7 +211,6 @@ void Window::getContext() const {
 		glfwMakeContextCurrent(mWindowPtr);
 		sWindowWithContext = this;
 	}
-	glfwMakeContextCurrent(mWindowPtr);
 }
 
 void Window::calculateProjectionMatrix() {
