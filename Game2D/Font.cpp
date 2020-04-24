@@ -15,6 +15,17 @@ Font::Font()
 	}
 }
 
+Font::Font(Font&& other) noexcept {
+	mFTLibrary = other.mFTLibrary;
+	mFace = other.mFace;
+	mFaceLoaded = other.mFaceLoaded;
+	std::swap(mCharacterAtlases, other.mCharacterAtlases);
+
+	other.mFTLibrary = nullptr;
+	other.mFace = nullptr;
+	other.mFaceLoaded = false;
+}
+
 Font::~Font() {
 	SCOPED_PROFILER;
 	if (mFaceLoaded)

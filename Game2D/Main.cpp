@@ -1,68 +1,20 @@
 #include <iostream>
-#include <string>
-#include <vector>
-#include <list>
-#include <time.h>
-#include <stdlib.h>
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
-#include <glm/gtx/string_cast.hpp>
-#include "Window.h"
-#include "Shader.h"
-#include "VertexArray.h"
-#include "Texture.h"
-#include "Sprite.h"
-#include "Clock.h"
-#include "Font.h"
-#include "Text.h"
-#include "Utility.h"
-#include "AudioSystem.h"
-#include "Music.h"
-#include "SoundBuffer.h"
-#include "Sound.h"
-#include "ResourceHolder.h"
-#include "Camera.h"
-#include "Animation.h"
-#include "Container.h"
-#include "Label.h"
-#include "Button.h"
-#include "EntityContainer.h"
-#include "TestComponent.h"
-#include "SpriteRenderer.h"
-#include "AnimationRenderer.h"
-#include "TextRenderer.h"
+#include "Application.h"
+#include "ScopedProfiler.h"
 
-#include <memory>
 
-using namespace std::literals::string_literals;
-
-#define APPLICATION_TITLE "GLFW/GLAD Application"s
-
-enum class TextureID {
-	Eagle,
-	Raptor,
-	FMODLogo,
-	Checkerboard,
-	Explosion,
-	Guybrush,
-	ButtonNormal,
-	ButtonSelected,
-	ButtonActive,
-};
-
-enum class SoundID {
-	Kick,
-	Snare,
-	Hats,
-	Crash,
-	Crow,
-};
 
 int main() {
 	try {
-		// TODO: Remove!
-		srand((unsigned)time(nullptr));
-
+		Application app;
+		app.run();
+	} catch (const std::exception& e) {
+		std::cout << "EXCEPTION: " << e.what() << "\n";
+		std::cin.get();
+	}
+	ScopedProfiler::printMeasurements();
+	/*
+	try {
 		Window window(
 			1024,
 			768,
@@ -452,5 +404,5 @@ int main() {
 		std::cout << "EXCEPTION: " << e.what() << std::endl;
 		std::cin.get();
 	}
-	ScopedProfiler::printMeasurements();
+	ScopedProfiler::printMeasurements();*/
 }

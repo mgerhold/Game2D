@@ -172,6 +172,7 @@
   <ItemGroup>
     <ClCompile Include="Animation.cpp" />
     <ClCompile Include="AnimationRenderer.cpp" />
+    <ClCompile Include="Application.cpp" />
     <ClCompile Include="AudioSystem.cpp" />
     <ClCompile Include="Button.cpp" />
     <ClCompile Include="Camera.cpp" />
@@ -190,6 +191,7 @@
     <ClCompile Include="GamepadState.cpp" />
     <ClCompile Include="Label.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="MainMenuState.cpp" />
     <ClCompile Include="Music.cpp" />
     <ClCompile Include="ScopedProfiler.cpp" />
     <ClCompile Include="Shader.cpp" />
@@ -197,12 +199,15 @@
     <ClCompile Include="SoundBuffer.cpp" />
     <ClCompile Include="Sprite.cpp" />
     <ClCompile Include="SpriteRenderer.cpp" />
+    <ClCompile Include="State.cpp" />
+    <ClCompile Include="StateStack.cpp" />
     <ClCompile Include="stb_image.cpp" />
     <ClCompile Include="TestComponent.cpp" />
     <ClCompile Include="Text.cpp" />
     <ClCompile Include="TextRenderer.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="Time.cpp" />
+    <ClCompile Include="TitleState.cpp" />
     <ClCompile Include="Transform.cpp" />
     <ClCompile Include="Transformable.cpp" />
     <ClCompile Include="Utility.cpp" />
@@ -213,6 +218,8 @@
   <ItemGroup>
     <ClInclude Include="Animation.h" />
     <ClInclude Include="AnimationRenderer.h" />
+    <ClInclude Include="AppContext.h" />
+    <ClInclude Include="Application.h" />
     <ClInclude Include="AudioSystem.h" />
     <ClInclude Include="Button.h" />
     <ClInclude Include="Camera.h" />
@@ -229,11 +236,13 @@
     <ClInclude Include="Font.h" />
     <ClInclude Include="GamepadState.h" />
     <ClInclude Include="Label.h" />
+    <ClInclude Include="MainMenuState.h" />
     <ClInclude Include="Music.h" />
     <ClInclude Include="Rect.h" />
     <ClInclude Include="NonCopyable.h" />
     <ClInclude Include="RenderStates.h" />
     <ClInclude Include="ResourceHolder.h" />
+    <ClInclude Include="ResourceIdentifiers.h" />
     <ClInclude Include="ScopedProfiler.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="Image.h" />
@@ -241,11 +250,15 @@
     <ClInclude Include="SoundBuffer.h" />
     <ClInclude Include="Sprite.h" />
     <ClInclude Include="SpriteRenderer.h" />
+    <ClInclude Include="State.h" />
+    <ClInclude Include="StateIdentifiers.h" />
+    <ClInclude Include="StateStack.h" />
     <ClInclude Include="TestComponent.h" />
     <ClInclude Include="Text.h" />
     <ClInclude Include="TextRenderer.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="Time.h" />
+    <ClInclude Include="TitleState.h" />
     <ClInclude Include="Transform.h" />
     <ClInclude Include="Transformable.h" />
     <ClInclude Include="Utility.h" />

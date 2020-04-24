@@ -1,11 +1,27 @@
+#include "ResourceHolder.h"
 template<typename idT, typename resT>
 inline void ResourceHolder<idT, resT>::load(idT id, const std::string& filename) {
-	const auto find = mResourceMap.find(id);
-	assert(find == mResourceMap.end());
+	/*const auto find = mResourceMap.find(id);
+	assert(find == mResourceMap.end());*/
+	if (isLoaded(id))
+		return;
 	resT resource;
 	bool success = resource.loadFromFile(filename);
 	assert(success);
 	mResourceMap.insert({ id, std::move(resource) });
+}
+
+template<typename idT, typename resT>
+inline bool ResourceHolder<idT, resT>::isLoaded(idT id) const {
+	const auto find = mResourceMap.find(id);
+	return find != mResourceMap.end();
+}
+
+template<typename idT, typename resT>
+inline void ResourceHolder<idT, resT>::unload(idT id) {
+	const auto find = mResourceMap.find(id);
+	assert(find != mResourceMap.end());
+	mResourceMap.erase(find);
 }
 
 template<typename idT, typename resT>

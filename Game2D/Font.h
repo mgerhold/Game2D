@@ -27,6 +27,7 @@ public:
 
 public:
 											Font();
+											Font(Font&& other) noexcept;
 											~Font();
 	bool									loadFromFile(const std::string& filename);
 	size_t									getNumberOfGlyphs() const;
@@ -40,8 +41,7 @@ private:
 		Texture texture = Texture();
 	};
 
-//TODO: Move to private!
-public:
+private:
 	void									generateCharacterAtlas(unsigned int fontHeight);
 
 private:
@@ -49,4 +49,6 @@ private:
 	FT_Face									mFace;
 	bool									mFaceLoaded;
 	std::map<unsigned int, CharacterAtlas>	mCharacterAtlases;
+
+	friend class Text;
 };

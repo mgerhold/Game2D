@@ -1,9 +1,13 @@
 #include "Utility.h"
+#include <cassert>
 
 void checkGLErrors(const char* file, int line) {
 	GLenum err;
 	std::string msg;
+	bool firstError = true;
 	while ((err = glGetError()) != GL_NO_ERROR) {
+		assert(firstError); // if this is triggered, there's a high chance that the OpenGL context is lost
+
 		switch (err) {
 		case GL_INVALID_ENUM:
 			msg = "GL_INVALID_ENUM";
@@ -31,5 +35,6 @@ void checkGLErrors(const char* file, int line) {
 			break;
 		}
 		std::cout << "OpenGL Error (" << file << ", " << line << ") " << msg << std::endl;
+		firstError = false;
 	}
 }
