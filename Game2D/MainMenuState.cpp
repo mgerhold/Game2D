@@ -27,12 +27,13 @@ MainMenuState::MainMenuState(StateStack* stateStack)
 	mTestButton->setNormalTexture(getContext().textureHolder.get(TextureID::ButtonNormal));
 	mTestButton->setSelectedTexture(getContext().textureHolder.get(TextureID::ButtonSelected));
 	mTestButton->setActiveTexture(getContext().textureHolder.get(TextureID::ButtonActive));
-	mTestButton->setString("Test");
+	mTestButton->setString("Play");
 	mTestButton->setFont(getContext().fontHolder.get(FontID::Default), 20);
 	mTestButton->centerOrigin();
 	mTestButton->setPosition(0.f, mTestButton->getHeight() + 20.f);
-	mTestButton->setCallbackFunc([]() {
-		std::cout << "This is the test button\n";
+	mTestButton->setCallbackFunc([this]() {
+		requestStackClear();
+		requestStackPush(StateID::Game);
 	});
 
 	mBackButton = std::make_shared<GUI::Button>();

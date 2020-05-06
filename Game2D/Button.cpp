@@ -85,7 +85,6 @@ void GUI::Button::setNormalTexture(const Texture& texture) {
 	updateSprite();
 	centerText();
 }
-
 void GUI::Button::setSelectedTexture(const Texture& texture) {
 	mTextureSelected = &texture;
 	updateSprite();

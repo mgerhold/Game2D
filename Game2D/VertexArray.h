@@ -34,6 +34,7 @@ public:
 						~VertexArray();
 	void				append(const Vertex& vertex);
 	void				modify(size_t index, const Vertex& vertex);
+	void				resize(size_t size);
 	void				clear();
 	const Vertex&		operator[](size_t index) const;
 private:

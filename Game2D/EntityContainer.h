@@ -5,7 +5,7 @@
 class EntityContainer : public Drawable {
 public:
 	void	add(Entity::Ptr entity);
-	void awake();
+	void	awake();
 	void	update(Time dt);
 
 private:

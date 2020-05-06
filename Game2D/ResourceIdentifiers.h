@@ -15,6 +15,12 @@ enum class TextureID {
 	ButtonNormal,
 	ButtonSelected,
 	ButtonActive,
+	Tilemap,
+	TileSelection,
+	ArrowLeft1,
+	ArrowLeft2,
+	ArrowRight1,
+	ArrowRight2,
 };
 
 enum class SoundID {

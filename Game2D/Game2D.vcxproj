@@ -180,6 +180,7 @@
     <ClCompile Include="Color.cpp" />
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="EntityContainer.cpp" />
+    <ClCompile Include="GameState.cpp" />
     <ClCompile Include="GUIComponent.cpp" />
     <ClCompile Include="Container.cpp" />
     <ClCompile Include="Entity.cpp" />
@@ -206,6 +207,7 @@
     <ClCompile Include="Text.cpp" />
     <ClCompile Include="TextRenderer.cpp" />
     <ClCompile Include="Texture.cpp" />
+    <ClCompile Include="Tilemap.cpp" />
     <ClCompile Include="Time.cpp" />
     <ClCompile Include="TitleState.cpp" />
     <ClCompile Include="Transform.cpp" />
@@ -227,6 +229,7 @@
     <ClInclude Include="Color.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="EntityContainer.h" />
+    <ClInclude Include="GameState.h" />
     <ClInclude Include="GUIComponent.h" />
     <ClInclude Include="Container.h" />
     <ClInclude Include="Drawable.h" />
@@ -257,6 +260,8 @@
     <ClInclude Include="Text.h" />
     <ClInclude Include="TextRenderer.h" />
     <ClInclude Include="Texture.h" />
+    <ClInclude Include="Tile.h" />
+    <ClInclude Include="Tilemap.h" />
     <ClInclude Include="Time.h" />
     <ClInclude Include="TitleState.h" />
     <ClInclude Include="Transform.h" />

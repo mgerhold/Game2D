@@ -1,6 +1,11 @@
 #include "SpriteRenderer.h"
 #include <iostream>
 
+SpriteRenderer::SpriteRenderer(const Sprite& sprite)
+	: Component()
+	, mSprite(sprite)
+{}
+
 Sprite& SpriteRenderer::getSprite() {
 	return mSprite;
 }

@@ -5,6 +5,7 @@
 
 class SpriteRenderer : public Component {
 public:
+					SpriteRenderer(const Sprite& sprite);
 	Sprite&			getSprite();
 
 private:

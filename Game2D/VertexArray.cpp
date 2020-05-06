@@ -45,6 +45,10 @@ void VertexArray::modify(size_t index, const Vertex& vertex) {
 	mNeedsUpdate = true;
 }
 
+void VertexArray::resize(size_t size) {
+	mVertices.resize(size);
+}
+
 void VertexArray::clear() {
 	SCOPED_PROFILER;
 	mVertices.clear();

@@ -3,6 +3,7 @@
 #include "Clock.h"
 #include "TitleState.h"
 #include "MainMenuState.h"
+#include "GameState.h"
 #include <iostream>
 
 Application::Application()
@@ -31,7 +32,8 @@ Application::Application()
 	mFontHolder.load(FontID::Default, "fonts/arial.ttf");
 
 	registerStates();
-	mStateStack.push(StateID::Title);
+	//mStateStack.push(StateID::Title);
+	mStateStack.push(StateID::Game);
 }
 
 void Application::run() {
@@ -95,4 +97,5 @@ void Application::run() {
 void Application::registerStates() {
 	mStateStack.registerState<TitleState>(StateID::Title);
 	mStateStack.registerState<MainMenuState>(StateID::MainMenu);
+	mStateStack.registerState<GameState>(StateID::Game);
 }

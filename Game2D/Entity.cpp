@@ -45,13 +45,3 @@ Transform Entity::getWorldTransform() const {
     transform *= getTransform();
     return transform;
 }
-
-template<typename T>
-T* Entity::getComponent() const {
-    for (const auto& component : mComponents) {
-        T* result = dynamic_cast<T*>(component.get());
-        if (result)
-            return result;
-    }
-    return nullptr;
-}
