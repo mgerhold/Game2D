@@ -1,6 +1,8 @@
 #include "Color.h"
 #include <algorithm>
 
+const Color Color::Black = Color(0.f, 0.f, 0.f, 1.f);
+
 Color::Color()
 	: Color(1.0f, 1.0f, 1.0f, 1.0f)
 {}

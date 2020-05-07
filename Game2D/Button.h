@@ -19,6 +19,7 @@ namespace GUI {
 		virtual void		draw(const Window& window, RenderStates states) const;
 		void				setString(const std::string& string);
 		void				setFont(Font& font, unsigned int fontHeight);
+		void				setFontColor(Color color);
 		virtual glm::ivec2	getSize() const override;
 		void				setNormalTexture(const Texture& texture);
 		void				setSelectedTexture(const Texture& texture);

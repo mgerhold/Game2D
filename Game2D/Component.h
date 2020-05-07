@@ -17,8 +17,8 @@ public:
 
 protected:
 	const Entity* getEntity() const;
-	template<typename T>
-	T* getComponent() const;
+	/*template<typename T>
+	T* getComponent() const;*/
 
 private:
 	virtual void draw(const Window& window, RenderStates states) const final;
@@ -32,3 +32,11 @@ private:
 
 	friend class Entity;
 };
+
+/*template<typename T>
+T* Component::getComponent() const {
+	if (!mEntity)
+		return nullptr;
+	auto result = (*mEntity).template getComponent<T>();
+	return result;
+}*/

@@ -73,6 +73,10 @@ void GUI::Button::setFont(Font& font, unsigned int fontHeight) {
 	centerText();
 }
 
+void GUI::Button::setFontColor(Color color) {
+	mText.setColor(color);
+}
+
 glm::ivec2 GUI::Button::getSize() const {
 	if (mTextureNormal)
 		return mTextureNormal->getSize();

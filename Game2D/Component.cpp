@@ -33,11 +33,3 @@ void Component::onUpdate(Time dt)
 void Component::setEntity(const Entity * entity) {
 	mEntity = entity;
 }
-
-template<typename T>
-T* Component::getComponent() const {
-	if (!mEntity)
-		return nullptr;
-	auto result = (*mEntity).template getComponent<T>();
-	return result;
-}

@@ -21,6 +21,9 @@ enum class TextureID {
 	ArrowLeft2,
 	ArrowRight1,
 	ArrowRight2,
+	Button2Normal,
+	Button2Selected,
+	Button2Active,
 };
 
 enum class SoundID {

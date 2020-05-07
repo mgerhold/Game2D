@@ -10,6 +10,7 @@ class Tilemap : public Component {
 public:
 						Tilemap(int width, int height, const Texture& tilemapTexture, int tileWidth, int tileHeight);
 
+	void				resize(int width, int height);
 	int					getNumTiles() const;
 	int					getTileWidth() const;
 	int					getTileHeight() const;
@@ -17,6 +18,9 @@ public:
 	int					getHeight() const;
 	const Texture&		getTexture() const;
 	void				setTile(int x, int y, Tile tile);
+	Tile				getTile(int x, int y) const;
+	int					getTilemapTilesPerRow() const;
+	int					getTilemapTilesPerColumn() const;
 
 private:
 	virtual void		onAwake() override;

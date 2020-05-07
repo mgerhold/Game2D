@@ -10,11 +10,19 @@ Tilemap::Tilemap(int width, int height, const Texture& tilemapTexture, int tileW
 	, mTileHeight(tileHeight)
 	, mVertexArray(PrimitiveType::Quads, DrawType::Static)
 {
-	mTiles = std::vector<Tile>(static_cast<size_t>(width) * height);
-	mTiles[0].id = 1;
-	mTiles[1].id = 2;
-	mTiles[2].id = 3;
+	resize(width, height);
+	mTiles[0].tilesetX = 1;
+	mTiles[0].tilesetY = 0;
+	mTiles[1].tilesetX = 2;
+	mTiles[1].tilesetY = 0;
+	mTiles[2].tilesetX = 3;
+	mTiles[2].tilesetY = 0;
 	rebuildVertexArray();
+}
+
+void Tilemap::resize(int width, int height) {
+	if (mTiles.size() != static_cast<size_t>(width) * height)
+		mTiles = std::vector<Tile>(static_cast<size_t>(width) * height);
 }
 
 int Tilemap::getNumTiles() const {
@@ -47,6 +55,18 @@ void Tilemap::setTile(int x, int y, Tile tile) {
 		return;
 	mTiles[n] = tile;
 	updateVertexArrayAt(x, y);
+}
+
+Tile Tilemap::getTile(int x, int y) const {
+	return mTiles[static_cast<size_t>(x) + static_cast<size_t>(y) * mWidth];
+}
+
+int Tilemap::getTilemapTilesPerRow() const {
+	return mTexture->getSize().x / mTileWidth;
+}
+
+int Tilemap::getTilemapTilesPerColumn() const {
+	return mTexture->getSize().y / mTileHeight;
 }
 
 void Tilemap::onAwake() {
@@ -88,22 +108,16 @@ void Tilemap::updateVertexArrayAt(int x, int y) {
 	if (x < 0 || x >= mWidth || y < 0 || y > mHeight)
 		return;
 
-	int height = mTexture->getSize().y / mTileHeight;
-	float uSize = static_cast<float>(mTileWidth) / mTexture->getSize().x;
-	float vSize = static_cast<float>(mTileHeight) / mTexture->getSize().y;
-	int tilesPerRow = mTexture->getSize().x / mTileWidth;
+	const int height = mTexture->getSize().y / mTileHeight;
+	const float uSize = static_cast<float>(mTileWidth) / mTexture->getSize().x;
+	const float vSize = static_cast<float>(mTileHeight) / mTexture->getSize().y;
 
-	Tile tile = mTiles[static_cast<size_t>(x) + static_cast<size_t>(y) * mWidth];
-	int posX = tile.id % tilesPerRow;
-	int posY = tile.id / tilesPerRow;
-	posY = height - posY - 1;
-	int index = (x + y * mWidth) * 4;
+	const Tile tile = mTiles[static_cast<size_t>(x) + static_cast<size_t>(y) * mWidth];
+	const int posX = tile.tilesetX;
+	const int posY = height - tile.tilesetY - 1;	
+	const int index = (x + y * mWidth) * 4;
 	mVertexArray.modify(static_cast<size_t>(index) + 0, Vertex(glm::vec2((x + 0) * mTileWidth, (y + 0) * mTileWidth), glm::vec2((posX + 0) * uSize, (posY + 0) * vSize)));
 	mVertexArray.modify(static_cast<size_t>(index) + 1, Vertex(glm::vec2((x + 1) * mTileWidth, (y + 0) * mTileWidth), glm::vec2((posX + 1) * uSize, (posY + 0) * vSize)));
 	mVertexArray.modify(static_cast<size_t>(index) + 2, Vertex(glm::vec2((x + 1) * mTileWidth, (y + 1) * mTileWidth), glm::vec2((posX + 1) * uSize, (posY + 1) * vSize)));
 	mVertexArray.modify(static_cast<size_t>(index) + 3, Vertex(glm::vec2((x + 0) * mTileWidth, (y + 1) * mTileWidth), glm::vec2((posX + 0) * uSize, (posY + 1) * vSize)));
-	/*mVertexArray.append(Vertex(glm::vec2((x + 0) * mTileWidth, (y + 0) * mTileWidth), glm::vec2((posX + 0) * uSize, (posY + 0) * vSize)));
-	mVertexArray.append(Vertex(glm::vec2((x + 1) * mTileWidth, (y + 0) * mTileWidth), glm::vec2((posX + 1) * uSize, (posY + 0) * vSize)));
-	mVertexArray.append(Vertex(glm::vec2((x + 1) * mTileWidth, (y + 1) * mTileWidth), glm::vec2((posX + 1) * uSize, (posY + 1) * vSize)));
-	mVertexArray.append(Vertex(glm::vec2((x + 0) * mTileWidth, (y + 1) * mTileWidth), glm::vec2((posX + 0) * uSize, (posY + 1) * vSize)));*/
 }

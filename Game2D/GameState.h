@@ -24,7 +24,7 @@ private:
 private:
 	EntityContainer mEntityContainer;
 	Entity*			mSelectionEntity;
-	Entity*			mTilemapEntity;
+	Entity*			mLevelEntity;
 	Camera			mCamera;
 	GUI::Container	mGUIContainer;
 	Sprite			mPreviewSprite;

@@ -194,6 +194,7 @@
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="MainMenuState.cpp" />
     <ClCompile Include="Music.cpp" />
+    <ClCompile Include="SavegameController.cpp" />
     <ClCompile Include="ScopedProfiler.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="Sound.cpp" />
@@ -246,6 +247,7 @@
     <ClInclude Include="RenderStates.h" />
     <ClInclude Include="ResourceHolder.h" />
     <ClInclude Include="ResourceIdentifiers.h" />
+    <ClInclude Include="SavegameController.h" />
     <ClInclude Include="ScopedProfiler.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="Image.h" />

@@ -1,5 +1,6 @@
 #pragma once
 
 struct Tile {
-	int id = 0;
+	int tilesetX = 0;
+	int tilesetY = 0;
 };
