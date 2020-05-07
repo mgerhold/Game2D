@@ -11,7 +11,7 @@ Application::Application()
 		1024,
 		768,
 		APPLICATION_TITLE,
-		4,		// multisampling
+		0,		// multisampling
 		false,	// vertical sync
 		true,	// resizeable
 		true,	// decorated

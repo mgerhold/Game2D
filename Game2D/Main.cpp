@@ -9,7 +9,7 @@ int main() {
 		Application app;
 		app.run();
 	} catch (const std::exception& e) {
-		std::cout << "EXCEPTION: " << e.what() << "\n";
+		std::cout << "CAUGHT EXCEPTION: " << e.what() << "\n";
 		std::cin.get();
 	}
 	ScopedProfiler::printMeasurements();

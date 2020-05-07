@@ -83,22 +83,10 @@ void Tilemap::onUpdate(Time dt) {
 }
 
 void Tilemap::rebuildVertexArray() {
-	/*int height = mTexture->getSize().y / mTileHeight;
-	float uSize = static_cast<float>(mTileWidth) / mTexture->getSize().x;
-	float vSize = static_cast<float>(mTileHeight) / mTexture->getSize().y;
-	int tilesPerRow = mTexture->getSize().x / mTileWidth;*/
 	mVertexArray.clear();
 	mVertexArray.resize(static_cast<size_t>(mWidth) * mHeight * 4);
 	for (int x = 0; x < mWidth; x++) {
 		for (int y = 0; y < mHeight; y++) {	
-			/*Tile tile = mTiles[static_cast<size_t>(x) + static_cast<size_t>(y) * mWidth];
-			int posX = tile.id % tilesPerRow;
-			int posY = tile.id / tilesPerRow;
-			posY = height - posY - 1;
-			mVertexArray.append(Vertex(glm::vec2((x + 0) * mTileWidth, (y + 0) * mTileWidth), glm::vec2((posX + 0) * uSize, (posY + 0) * vSize)));
-			mVertexArray.append(Vertex(glm::vec2((x + 1) * mTileWidth, (y + 0) * mTileWidth), glm::vec2((posX + 1) * uSize, (posY + 0) * vSize)));
-			mVertexArray.append(Vertex(glm::vec2((x + 1) * mTileWidth, (y + 1) * mTileWidth), glm::vec2((posX + 1) * uSize, (posY + 1) * vSize)));
-			mVertexArray.append(Vertex(glm::vec2((x + 0) * mTileWidth, (y + 1) * mTileWidth), glm::vec2((posX + 0) * uSize, (posY + 1) * vSize)));*/
 			updateVertexArrayAt(x, y);
 		}
 	}
@@ -113,11 +101,21 @@ void Tilemap::updateVertexArrayAt(int x, int y) {
 	const float vSize = static_cast<float>(mTileHeight) / mTexture->getSize().y;
 
 	const Tile tile = mTiles[static_cast<size_t>(x) + static_cast<size_t>(y) * mWidth];
-	const int posX = tile.tilesetX;
-	const int posY = height - tile.tilesetY - 1;	
+	const int offsetX = mTileWidth * tile.tilesetX;
+	const int offsetY = mTileHeight * (height - tile.tilesetY - 1);
+	const int texWidth = mTexture->getSize().x;
+	const int texHeight = mTexture->getSize().y;
+
+
+	glm::vec2 uvs[4];
+	uvs[0] = glm::vec2(static_cast<float>(offsetX) / texWidth, static_cast<float>(offsetY) / texHeight);
+	uvs[1] = glm::vec2(static_cast<float>(offsetX + mTileWidth) / texWidth, static_cast<float>(offsetY) / texHeight);
+	uvs[2] = glm::vec2(static_cast<float>(offsetX + mTileWidth) / texWidth, static_cast<float>(offsetY + mTileHeight) / texHeight);
+	uvs[3] = glm::vec2(static_cast<float>(offsetX) / texWidth, static_cast<float>(offsetY + mTileHeight) / texHeight);
+
 	const int index = (x + y * mWidth) * 4;
-	mVertexArray.modify(static_cast<size_t>(index) + 0, Vertex(glm::vec2((x + 0) * mTileWidth, (y + 0) * mTileWidth), glm::vec2((posX + 0) * uSize, (posY + 0) * vSize)));
-	mVertexArray.modify(static_cast<size_t>(index) + 1, Vertex(glm::vec2((x + 1) * mTileWidth, (y + 0) * mTileWidth), glm::vec2((posX + 1) * uSize, (posY + 0) * vSize)));
-	mVertexArray.modify(static_cast<size_t>(index) + 2, Vertex(glm::vec2((x + 1) * mTileWidth, (y + 1) * mTileWidth), glm::vec2((posX + 1) * uSize, (posY + 1) * vSize)));
-	mVertexArray.modify(static_cast<size_t>(index) + 3, Vertex(glm::vec2((x + 0) * mTileWidth, (y + 1) * mTileWidth), glm::vec2((posX + 0) * uSize, (posY + 1) * vSize)));
+	mVertexArray.modify(static_cast<size_t>(index) + 0, Vertex(glm::vec2((x + 0) * mTileWidth, (y + 0) * mTileWidth), uvs[0]));
+	mVertexArray.modify(static_cast<size_t>(index) + 1, Vertex(glm::vec2((x + 1) * mTileWidth, (y + 0) * mTileWidth), uvs[1]));
+	mVertexArray.modify(static_cast<size_t>(index) + 2, Vertex(glm::vec2((x + 1) * mTileWidth, (y + 1) * mTileWidth), uvs[2]));
+	mVertexArray.modify(static_cast<size_t>(index) + 3, Vertex(glm::vec2((x + 0) * mTileWidth, (y + 1) * mTileWidth), uvs[3]));
 }
