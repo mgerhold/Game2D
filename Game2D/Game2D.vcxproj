@@ -197,6 +197,7 @@
     <ClCompile Include="SavegameController.cpp" />
     <ClCompile Include="ScopedProfiler.cpp" />
     <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="RigidBody.cpp" />
     <ClCompile Include="Sound.cpp" />
     <ClCompile Include="SoundBuffer.cpp" />
     <ClCompile Include="Sprite.cpp" />
@@ -227,6 +228,7 @@
     <ClInclude Include="Button.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Clock.h" />
+    <ClInclude Include="Collider.h" />
     <ClInclude Include="Color.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="EntityContainer.h" />
@@ -251,6 +253,7 @@
     <ClInclude Include="ScopedProfiler.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="Image.h" />
+    <ClInclude Include="RigidBody.h" />
     <ClInclude Include="Sound.h" />
     <ClInclude Include="SoundBuffer.h" />
     <ClInclude Include="Sprite.h" />

@@ -1,8 +1,9 @@
 #include "Entity.h"
 
-Entity::Entity()
-    : mParent(nullptr)
-    , mID(-1)
+#include "EntityContainer.h"
+
+Entity::Entity(EntityContainer* entityContainer)
+    : mEntityContainer(entityContainer)
 {}
 
 void Entity::setParent(Entity& entity) {
@@ -44,4 +45,8 @@ Transform Entity::getWorldTransform() const {
         transform = mParent->getWorldTransform();
     transform *= getTransform();
     return transform;
+}
+
+EntityContainer* Entity::getEntityContainer() const {
+    return mEntityContainer;
 }

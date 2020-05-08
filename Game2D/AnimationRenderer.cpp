@@ -4,6 +4,10 @@ Animation& AnimationRenderer::getAnimation() {
 	return mAnimation;
 }
 
+void AnimationRenderer::setAnimation(const Animation& animation) {
+	mAnimation = animation;
+}
+
 
 
 void AnimationRenderer::onUpdate(Time dt) {

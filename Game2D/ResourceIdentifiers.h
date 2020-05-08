@@ -15,7 +15,7 @@ enum class TextureID {
 	ButtonNormal,
 	ButtonSelected,
 	ButtonActive,
-	Tilemap,
+	Tileset,
 	TileSelection,
 	ArrowLeft1,
 	ArrowLeft2,
@@ -24,6 +24,7 @@ enum class TextureID {
 	Button2Normal,
 	Button2Selected,
 	Button2Active,
+	PlayerIdle,
 };
 
 enum class SoundID {

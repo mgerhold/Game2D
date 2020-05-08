@@ -16,7 +16,7 @@ public:
 	void awake();
 
 protected:
-	const Entity* getEntity() const;
+	Entity* getEntity();
 	/*template<typename T>
 	T* getComponent() const;*/
 
@@ -25,10 +25,10 @@ private:
 	virtual void onAwake();
 	virtual void onDraw(const Window& window, RenderStates states) const;
 	virtual void onUpdate(Time dt);
-	void setEntity(const Entity* entity);
+	void setEntity(Entity* entity);
 
 private:
-	const Entity* mEntity;
+	Entity* mEntity;
 
 	friend class Entity;
 };

@@ -4,36 +4,41 @@
 #include "SpriteRenderer.h"
 #include "Button.h"
 #include "SavegameController.h"
+#include "AnimationRenderer.h"
+#include "RigidBody.h"
+#include <vector>
+#include <utility> // std::pair
+
+namespace {
+	using namespace std::literals::string_literals;
+
+	const std::vector<std::pair<TextureID, std::string>> neededTextures = {
+		{ TextureID::Tileset, "textures/tileset.png"s },
+		{ TextureID::TileSelection, "textures/selection.png" },
+		{ TextureID::ArrowLeft1, "textures/arrow_left1.png" },
+		{ TextureID::ArrowLeft2, "textures/arrow_left2.png" },
+		{ TextureID::ArrowRight1, "textures/arrow_right1.png" },
+		{ TextureID::ArrowRight2, "textures/arrow_right2.png" },
+		{ TextureID::Button2Normal, "textures/button2_normal.png" },
+		{ TextureID::Button2Selected, "textures/button2_selected.png" },
+		{ TextureID::Button2Active, "textures/button2_active.png" },
+		{ TextureID::PlayerIdle, "textures/player_idle.png" },
+	};
+}
 
 GameState::GameState(StateStack* stateStack)
 	: State(stateStack)
-	, mSelectionEntity(nullptr)
-	, mLevelEntity(nullptr)
 {
-	getContext().textureHolder.load(TextureID::Tilemap, "textures/tileset.png");
-	getContext().textureHolder.get(TextureID::Tilemap).setTextureFiltering(Texture::Filtering::Nearest);
-	getContext().textureHolder.load(TextureID::TileSelection, "textures/selection.png");
-	getContext().textureHolder.get(TextureID::TileSelection).setTextureFiltering(Texture::Filtering::Nearest);
-	getContext().textureHolder.load(TextureID::ArrowLeft1, "textures/arrow_left1.png");
-	getContext().textureHolder.get(TextureID::ArrowLeft1).setTextureFiltering(Texture::Filtering::Nearest);
-	getContext().textureHolder.load(TextureID::ArrowLeft2, "textures/arrow_left2.png");
-	getContext().textureHolder.get(TextureID::ArrowLeft2).setTextureFiltering(Texture::Filtering::Nearest);
-	getContext().textureHolder.load(TextureID::ArrowRight1, "textures/arrow_right1.png");
-	getContext().textureHolder.get(TextureID::ArrowRight1).setTextureFiltering(Texture::Filtering::Nearest);
-	getContext().textureHolder.load(TextureID::ArrowRight2, "textures/arrow_right2.png");
-	getContext().textureHolder.get(TextureID::ArrowRight2).setTextureFiltering(Texture::Filtering::Nearest);
-	getContext().textureHolder.load(TextureID::Button2Normal, "textures/button2_normal.png");
-	getContext().textureHolder.get(TextureID::Button2Normal).setTextureFiltering(Texture::Filtering::Nearest);
-	getContext().textureHolder.load(TextureID::Button2Selected, "textures/button2_selected.png");
-	getContext().textureHolder.get(TextureID::Button2Selected).setTextureFiltering(Texture::Filtering::Nearest);
-	getContext().textureHolder.load(TextureID::Button2Active, "textures/button2_active.png");
-	getContext().textureHolder.get(TextureID::Button2Active).setTextureFiltering(Texture::Filtering::Nearest);
+	for (const auto& [id, filename] : neededTextures) {
+		getContext().textureHolder.load(id, filename);
+		getContext().textureHolder.get(id).setTextureFiltering(Texture::Filtering::Nearest);
+	}
 
 	// level entity
-	auto levelEntity = std::make_unique<Entity>();
+	auto levelEntity = std::make_unique<Entity>(&mEntityContainer);
 	// tilemap component
 		// TODO: Remove magic numbers
-	auto tilemap = std::make_unique<Tilemap>(100, 30, getContext().textureHolder.get(TextureID::Tilemap), 16, 16);
+	auto tilemap = std::make_unique<Tilemap>(100, 30, getContext().textureHolder.get(TextureID::Tileset), 16, 16);
 	std::cout << "Number of tiles in tilemap: " << tilemap->getNumTiles() << "\n";
 	levelEntity->addComponent(std::move(tilemap));
 	mLevelEntity = levelEntity.get();
@@ -43,8 +48,28 @@ GameState::GameState(StateStack* stateStack)
 	// add level entity to entity container
 	mEntityContainer.add(std::move(levelEntity));
 
+	// player
+	auto player = std::make_unique<Entity>(&mEntityContainer);
+	mPlayer = player.get();
+	// player.AnimationRenderer
+	auto playerRenderer = std::make_unique<AnimationRenderer>();
+	Animation idleAnim;
+	idleAnim.setTexture(getContext().textureHolder.get(TextureID::PlayerIdle));
+	idleAnim.generateAnimationStates(4, 1, Time::seconds(0.2f));
+	idleAnim.setLooping(true);
+	playerRenderer->setAnimation(idleAnim);
+	mPlayer->addComponent(std::move(playerRenderer));
+	// player.RigidBody
+	auto rigidBody = std::make_unique<RigidBody>();
+	rigidBody->setGravity(glm::vec2(0.f));
+	player->addComponent(std::move(rigidBody));
+	player->setPosition(20.f, 50.f);
+	mEntityContainer.add(std::move(player));
+	
+
+	/**** GUI STUFF STARTS HERE ****/
 	// tilemap selection
-	auto selectionEntity = std::make_unique<Entity>();
+	auto selectionEntity = std::make_unique<Entity>(&mEntityContainer);
 	Sprite selectionSprite;
 	selectionSprite.setTexture(getContext().textureHolder.get(TextureID::TileSelection));
 	auto selectionSpriteRenderer = std::make_unique<SpriteRenderer>(selectionSprite);
@@ -101,7 +126,7 @@ GameState::GameState(StateStack* stateStack)
 	mGUIContainer.pack(loadButton);
 	
 	// preview tile
-	mPreviewSprite.setTexture(getContext().textureHolder.get(TextureID::Tilemap));
+	mPreviewSprite.setTexture(getContext().textureHolder.get(TextureID::Tileset));
 	updateSelectedPreviewTile();
 	mPreviewSprite.setPosition(-350.f, 300.f);
 	mPreviewSprite.setScale(glm::vec2(4.f));
@@ -114,15 +139,9 @@ GameState::GameState(StateStack* stateStack)
 }
 
 GameState::~GameState() {
-	getContext().textureHolder.unload(TextureID::Tilemap);
-	getContext().textureHolder.unload(TextureID::TileSelection);
-	getContext().textureHolder.unload(TextureID::ArrowLeft1);
-	getContext().textureHolder.unload(TextureID::ArrowLeft2);
-	getContext().textureHolder.unload(TextureID::ArrowRight1);
-	getContext().textureHolder.unload(TextureID::ArrowRight2);
-	getContext().textureHolder.unload(TextureID::Button2Normal);
-	getContext().textureHolder.unload(TextureID::Button2Selected);
-	getContext().textureHolder.unload(TextureID::Button2Active);
+	for (const auto& [id, filename] : neededTextures) {
+		getContext().textureHolder.unload(id);
+	}
 }
 
 bool GameState::update(Time dt) {
@@ -165,6 +184,10 @@ void GameState::draw(const Window& window) const {
 bool GameState::handleEvent(Event e) {
 	if (!mGUIContainer.handleEvent(e, getContext().window)) {
 		switch (e.type) {
+			case Event::Type::KeyPress:
+				if (e.key == Key::Space)
+					mPlayer->getComponent<RigidBody>()->accelerate(glm::vec2(0.f, 300.f));
+				break;
 			case Event::Type::MouseScroll:
 				mCamera.zoom(1.f + 0.1f * static_cast<float>(e.mouseScrollDelta.y));
 				break;

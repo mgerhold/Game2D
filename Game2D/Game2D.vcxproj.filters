@@ -156,6 +156,9 @@
     <ClCompile Include="SavegameController.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="RigidBody.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Window.h">
@@ -315,6 +318,12 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="SavegameController.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Collider.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="RigidBody.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>

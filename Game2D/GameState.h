@@ -23,8 +23,9 @@ private:
 
 private:
 	EntityContainer mEntityContainer;
-	Entity*			mSelectionEntity;
-	Entity*			mLevelEntity;
+	Entity*			mSelectionEntity = nullptr;
+	Entity*			mLevelEntity = nullptr;
+	Entity*			mPlayer = nullptr;
 	Camera			mCamera;
 	GUI::Container	mGUIContainer;
 	Sprite			mPreviewSprite;

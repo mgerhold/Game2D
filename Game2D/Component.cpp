@@ -17,7 +17,7 @@ void Component::awake() {
 	onAwake();
 }
 
-const Entity* Component::getEntity() const {
+Entity* Component::getEntity() {
 	return mEntity;
 }
 
@@ -30,6 +30,6 @@ void Component::onDraw(const Window& window, RenderStates states) const
 void Component::onUpdate(Time dt)
 {}
 
-void Component::setEntity(const Entity * entity) {
+void Component::setEntity(Entity * entity) {
 	mEntity = entity;
 }

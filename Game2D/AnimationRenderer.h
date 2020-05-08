@@ -6,6 +6,7 @@
 class AnimationRenderer : public Component {
 public:
 	Animation&		getAnimation();
+	void			setAnimation(const Animation& animation);
 
 private:
 	virtual void	onUpdate(Time dt) override;
