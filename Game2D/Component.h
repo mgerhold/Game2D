@@ -13,12 +13,9 @@ public:
 public:
 	Component();
 	void update(Time dt);
+	virtual bool handleEvent(Event e);
 	void awake();
-
-protected:
 	Entity* getEntity();
-	/*template<typename T>
-	T* getComponent() const;*/
 
 private:
 	virtual void draw(const Window& window, RenderStates states) const final;

@@ -6,6 +6,9 @@
 #include "SavegameController.h"
 #include "AnimationRenderer.h"
 #include "RigidBody.h"
+#include "BoxCollider.h"
+#include "TilemapCollider.h"
+#include "PlayerController.h"
 #include <vector>
 #include <utility> // std::pair
 
@@ -28,6 +31,7 @@ namespace {
 
 GameState::GameState(StateStack* stateStack)
 	: State(stateStack)
+	, mEntityContainer(getContext())
 {
 	for (const auto& [id, filename] : neededTextures) {
 		getContext().textureHolder.load(id, filename);
@@ -35,21 +39,23 @@ GameState::GameState(StateStack* stateStack)
 	}
 
 	// level entity
-	auto levelEntity = std::make_unique<Entity>(&mEntityContainer);
-	// tilemap component
+	auto tilemap = std::make_unique<Entity>(&mEntityContainer, getContext());
+	// tilemapComponent
 		// TODO: Remove magic numbers
-	auto tilemap = std::make_unique<Tilemap>(100, 30, getContext().textureHolder.get(TextureID::Tileset), 16, 16);
-	std::cout << "Number of tiles in tilemap: " << tilemap->getNumTiles() << "\n";
-	levelEntity->addComponent(std::move(tilemap));
-	mLevelEntity = levelEntity.get();
+	auto tilemapComponent = std::make_unique<Tilemap>(100, 30, getContext().textureHolder.get(TextureID::Tileset), 16, 16);
+	tilemap->addComponent(std::move(tilemapComponent));
+	mTilemap = tilemap.get();
 	// savegame controller component
 	auto savegameController = std::make_unique<SavegameController>();
-	mLevelEntity->addComponent(std::move(savegameController));
+	mTilemap->addComponent(std::move(savegameController));
+	// tilemap collider
+	auto tilemapCollider = std::make_unique<TilemapCollider>();
+	mTilemap->addComponent(std::move(tilemapCollider));
 	// add level entity to entity container
-	mEntityContainer.add(std::move(levelEntity));
+	mEntityContainer.add(std::move(tilemap));
 
 	// player
-	auto player = std::make_unique<Entity>(&mEntityContainer);
+	auto player = std::make_unique<Entity>(&mEntityContainer, getContext());
 	mPlayer = player.get();
 	// player.AnimationRenderer
 	auto playerRenderer = std::make_unique<AnimationRenderer>();
@@ -59,17 +65,22 @@ GameState::GameState(StateStack* stateStack)
 	idleAnim.setLooping(true);
 	playerRenderer->setAnimation(idleAnim);
 	mPlayer->addComponent(std::move(playerRenderer));
+	// player.BoxCollider
+	auto boxCollider = std::make_unique<BoxCollider>();
+	player->addComponent(std::move(boxCollider));
 	// player.RigidBody
 	auto rigidBody = std::make_unique<RigidBody>();
-	rigidBody->setGravity(glm::vec2(0.f));
+	rigidBody->setGravity(glm::vec2(0.f, -500.f));
 	player->addComponent(std::move(rigidBody));
-	player->setPosition(20.f, 50.f);
+	// player.PlayerController
+	auto playerController = std::make_unique<PlayerController>();
+	player->addComponent(std::move(playerController));
+	player->setPosition(20.f, 90.f);
 	mEntityContainer.add(std::move(player));
-	
 
 	/**** GUI STUFF STARTS HERE ****/
-	// tilemap selection
-	auto selectionEntity = std::make_unique<Entity>(&mEntityContainer);
+	// tilemapComponent selection
+	auto selectionEntity = std::make_unique<Entity>(&mEntityContainer, getContext());
 	Sprite selectionSprite;
 	selectionSprite.setTexture(getContext().textureHolder.get(TextureID::TileSelection));
 	auto selectionSpriteRenderer = std::make_unique<SpriteRenderer>(selectionSprite);
@@ -108,7 +119,7 @@ GameState::GameState(StateStack* stateStack)
 	saveButton->setFontColor(Color::Black);
 	saveButton->setString("Save");
 	saveButton->setCallbackFunc([this]() {
-		mLevelEntity->getComponent<SavegameController>()->saveLevel("level01.lvl");
+		mTilemap->getComponent<SavegameController>()->saveLevel("level01.lvl");
 	});
 	mGUIContainer.pack(saveButton);
 		// load button
@@ -121,8 +132,8 @@ GameState::GameState(StateStack* stateStack)
 	loadButton->setFontColor(Color::Black);
 	loadButton->setString("Load");
 	loadButton->setCallbackFunc([this]() {
-		mLevelEntity->getComponent<SavegameController>()->loadLevel("level01.lvl");
-		});
+		mTilemap->getComponent<SavegameController>()->loadLevel("level01.lvl");
+	});
 	mGUIContainer.pack(loadButton);
 	
 	// preview tile
@@ -136,6 +147,12 @@ GameState::GameState(StateStack* stateStack)
 
 	// awake entities
 	mEntityContainer.awake();
+
+	// load map
+	{
+		auto ptr = mTilemap->getComponent<SavegameController>();
+		ptr->loadLevel("level01.lvl");
+	}
 }
 
 GameState::~GameState() {
@@ -158,7 +175,7 @@ bool GameState::update(Time dt) {
 	if (window.isKeyPressed(Key::S))
 		mCamera.move(glm::vec2(0, -movementSpeed) * dt.asSeconds());
 
-	auto* tilemap = mLevelEntity->getComponent<Tilemap>();
+	auto* tilemap = mTilemap->getComponent<Tilemap>();
 	auto mousePos = window.windowToWorldCoords(window.getMousePosition(), mCamera);
 	auto tilePos = glm::vec2(
 		mousePos.x / tilemap->getTileWidth(),
@@ -182,19 +199,19 @@ void GameState::draw(const Window& window) const {
 }
 
 bool GameState::handleEvent(Event e) {
-	if (!mGUIContainer.handleEvent(e, getContext().window)) {
+	if (!mGUIContainer.handleEvent(e, getContext().window) && !mEntityContainer.handleEvent(e)) {
 		switch (e.type) {
-			case Event::Type::KeyPress:
+			/*case Event::Type::KeyPress:
 				if (e.key == Key::Space)
 					mPlayer->getComponent<RigidBody>()->accelerate(glm::vec2(0.f, 300.f));
-				break;
+				break;*/
 			case Event::Type::MouseScroll:
 				mCamera.zoom(1.f + 0.1f * static_cast<float>(e.mouseScrollDelta.y));
 				break;
 			case Event::Type::MouseButtonPress: {
 				// determine which tile was clicked
 				auto mousePos = getContext().window.windowToWorldCoords(glm::vec2(e.mousePosition.x, e.mousePosition.y), mCamera);
-				auto* tilemap = mLevelEntity->getComponent<Tilemap>();
+				auto* tilemap = mTilemap->getComponent<Tilemap>();
 				auto tilePos = glm::ivec2(
 					std::trunc(mousePos.x / tilemap->getTileWidth()),
 					std::trunc(mousePos.y / tilemap->getTileHeight())
@@ -207,6 +224,9 @@ bool GameState::handleEvent(Event e) {
 						tile.tilesetX = mSelectedPreviewTile % tilemap->getTilemapTilesPerRow();
 						tile.tilesetY = mSelectedPreviewTile / tilemap->getTilemapTilesPerRow();
 						tilemap->setTile(tilePos.x, tilePos.y, tile);
+						auto tilemapCollider = mTilemap->getComponent<TilemapCollider>();
+						if (tilemapCollider)
+							tilemapCollider->recalculateBoxes();
 						break;
 					}
 					case MouseButton::Right: {
@@ -223,7 +243,7 @@ bool GameState::handleEvent(Event e) {
 }
 
 void GameState::updateSelectedPreviewTile() {
-	auto tilemap = mLevelEntity->getComponent<Tilemap>();
+	auto tilemap = mTilemap->getComponent<Tilemap>();
 	const auto& texture = tilemap->getTexture();
 	int xPos = mSelectedPreviewTile % (texture.getSize().x / tilemap->getTileWidth());
 	int yPos = mSelectedPreviewTile / (texture.getSize().x / tilemap->getTileWidth());
@@ -238,7 +258,7 @@ void GameState::updateSelectedPreviewTile() {
 }
 
 void GameState::setSelection(int n) {
-	auto tilemap = mLevelEntity->getComponent<Tilemap>();
+	auto tilemap = mTilemap->getComponent<Tilemap>();
 	const auto& texture = tilemap->getTexture();
 	const int sizeX = texture.getSize().x / tilemap->getTileWidth();
 	const int sizeY = texture.getSize().y / tilemap->getTileHeight();

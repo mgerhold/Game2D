@@ -24,6 +24,7 @@ public:
 	int					getHeight() const;
 	virtual glm::ivec2	getSize() const;
 	FloatRect			getLocalBounds() const;
+	virtual FloatRect	getWorldBounds() const;
 
 private:
 	void				recalculateTransform() const;

@@ -2,6 +2,7 @@
 #include <iostream>
 #include "Entity.h"
 #include <fstream>
+#include "TilemapCollider.h"
 
 using namespace std::literals::string_literals;
 
@@ -54,6 +55,11 @@ void SavegameController::loadLevel(const std::string& filename) {
 		ifs.close();
 	} catch (const std::exception& e) {
 		throw std::runtime_error(("Error while loading level file "s + filename + ": "s + std::string(e.what())).c_str());
+	}
+
+	auto tilemapCollider = getEntity()->getComponent<TilemapCollider>();
+	if (tilemapCollider) {
+		tilemapCollider->recalculateBoxes();
 	}
 }
 

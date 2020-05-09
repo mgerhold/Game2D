@@ -1,6 +1,7 @@
 #include "RigidBody.h"
 #include "Entity.h"
 #include <iostream>
+#include "Collider.h"
 
 void RigidBody::setMass(float mass) {
 	mMass = mass;
@@ -16,6 +17,10 @@ void RigidBody::accelerate(glm::vec2 acceleration) {
 
 glm::vec2 RigidBody::getVelocity() const {
 	return mVelocity;
+}
+
+void RigidBody::setVelocity(glm::vec2 velocity) {
+	mVelocity = velocity;
 }
 
 void RigidBody::setGravity(glm::vec2 gravity) {
@@ -34,6 +39,36 @@ float RigidBody::getDrag() const {
 
 void RigidBody::onAwake() {
 	mEntity = getEntity();
+	auto collider = mEntity->getComponent<Collider>();
+	if (collider) {
+		collider->registerCallback(Collider::CallbackType::Colliding, [this](CollisionInfo info) {
+			if (mVelocity != glm::vec2(0.f)) {
+				auto t = glm::vec2(0.f);
+				if (info.penetration.x < info.penetration.y) {
+					if (info.thisBounds.left == info.intersection.left) { // collision from the right side
+						t = glm::vec2(info.penetration.x, 0.f);
+						if (mVelocity.x <= 0.f)
+							mVelocity.x = 0.f;
+					} else { // collision from the left side
+						t = glm::vec2(-info.penetration.x, 0.f);
+						if (mVelocity.x >= 0.f)
+							mVelocity.x = 0.f;
+					}
+				} else {
+					if (info.thisBounds.bottom == info.intersection.bottom) { // collision from the top
+						t = glm::vec2(0.f, info.penetration.y);
+						if (mVelocity.y <= 0.f)
+							mVelocity.y = 0.f;
+					} else { // collision from the bottom
+						t = glm::vec2(0.f, -info.penetration.y);
+						if (mVelocity.y >= 0.f)
+							mVelocity.y = 0.f;
+					}
+				}
+				mEntity->setPosition(mEntity->getPosition() + t);
+			}
+		});
+	}
 }
 
 void RigidBody::onUpdate(Time dt) {

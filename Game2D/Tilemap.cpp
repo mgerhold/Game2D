@@ -1,4 +1,5 @@
 #include "Tilemap.h"
+#include "TilemapCollider.h"
 #include <iostream>
 
 Tilemap::Tilemap(int width, int height, const Texture& tilemapTexture, int tileWidth, int tileHeight)
@@ -11,12 +12,6 @@ Tilemap::Tilemap(int width, int height, const Texture& tilemapTexture, int tileW
 	, mVertexArray(PrimitiveType::Quads, DrawType::Static)
 {
 	resize(width, height);
-	mTiles[0].tilesetX = 1;
-	mTiles[0].tilesetY = 0;
-	mTiles[1].tilesetX = 2;
-	mTiles[1].tilesetY = 0;
-	mTiles[2].tilesetX = 3;
-	mTiles[2].tilesetY = 0;
 	rebuildVertexArray();
 }
 

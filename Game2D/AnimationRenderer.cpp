@@ -17,3 +17,7 @@ void AnimationRenderer::onUpdate(Time dt) {
 void AnimationRenderer::onDraw(const Window& window, RenderStates states) const {
 	window.draw(mAnimation, states);
 }
+
+glm::ivec2 AnimationRenderer::determineSize() const {
+	return mAnimation.getSize();
+}

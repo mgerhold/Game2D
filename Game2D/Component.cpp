@@ -13,6 +13,10 @@ void Component::update(Time dt) {
 	onUpdate(dt);
 }
 
+bool Component::handleEvent(Event e) {
+	return false;
+}
+
 void Component::awake() {
 	onAwake();
 }

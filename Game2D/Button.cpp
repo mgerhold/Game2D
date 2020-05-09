@@ -133,5 +133,5 @@ void GUI::Button::centerText() {
 
 bool GUI::Button::isMouseInside(const Event& event, const Window& window) const {
 	auto pos = window.windowToWorldCoords(glm::vec2(event.mousePosition.x, event.mousePosition.y));
-	return getLocalBounds().isInside(pos.x, pos.y);
+	return getWorldBounds().isInside(pos.x, pos.y);
 }

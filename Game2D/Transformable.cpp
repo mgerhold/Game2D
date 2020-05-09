@@ -84,10 +84,27 @@ glm::ivec2 Transformable::getSize() const {
 
 FloatRect Transformable::getLocalBounds() const {
 	return FloatRect(
-		mPosition.x - mOrigin.x,
+		/*mPosition.x - mOrigin.x,
 		mPosition.y - mOrigin.y,
 		mPosition.x + getWidth() - mOrigin.x,
-		mPosition.y + getHeight() - mOrigin.y
+		mPosition.y + getHeight() - mOrigin.y*/
+		-mOrigin.x,
+		-mOrigin.y,
+		getWidth() - mOrigin.x,
+		getHeight() - mOrigin.y
+	);
+}
+
+FloatRect Transformable::getWorldBounds() const {
+	auto transform = getTransform();
+	auto local = getLocalBounds();
+	glm::vec4 p1 = glm::vec4(local.left, local.bottom, 0.f, 1.f);
+	glm::vec4 p2 = glm::vec4(local.right, local.top, 0.f, 1.f);
+	p1 = transform.getMatrix() * p1;
+	p2 = transform.getMatrix() * p2;
+	return FloatRect(
+		p1.x, p1.y,
+		p2.x, p2.y
 	);
 }
 

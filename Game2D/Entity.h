@@ -5,6 +5,7 @@
 #include <vector>
 #include "Time.h"
 #include "Component.h"
+#include "AppContext.h"
 
 class EntityContainer;
 
@@ -16,16 +17,20 @@ public:
 	using Ptr = std::unique_ptr<Entity>;
 
 public:
-								Entity(EntityContainer* entityContainer);
+								Entity(EntityContainer* entityContainer, AppContext context);
 
 	void						setParent(Entity& entity);
 	void						awake();
 	virtual void				update(Time dt) final;
+	bool						handleEvent(Event e);
 	void						setID(int id);
 	int							getID() const;
 	void						addComponent(Component::Ptr component);
 	Transform					getWorldTransform() const;
+	FloatRect					getWorldBounds() const override;
 	EntityContainer*			getEntityContainer() const;
+	glm::ivec2					getSize() const override;
+	AppContext					getContext() const;
 
 	template<typename T>
 	T*							getComponent() const;
@@ -38,6 +43,7 @@ private:
 	std::vector<Component::Ptr>	mComponents;
 	int							mID = -1;
 	EntityContainer*			mEntityContainer;
+	AppContext					mContext;
 };
 
 template<typename T>

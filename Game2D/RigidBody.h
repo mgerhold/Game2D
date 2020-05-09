@@ -11,6 +11,7 @@ public:
 	float		getMass() const;
 	void		accelerate(glm::vec2 acceleration);
 	glm::vec2	getVelocity() const;
+	void		setVelocity(glm::vec2 velocity);
 	void		setGravity(glm::vec2 gravity);
 	glm::vec2	getGravity() const;
 	void		setDrag(float drag);

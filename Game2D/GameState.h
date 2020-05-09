@@ -24,7 +24,7 @@ private:
 private:
 	EntityContainer mEntityContainer;
 	Entity*			mSelectionEntity = nullptr;
-	Entity*			mLevelEntity = nullptr;
+	Entity*			mTilemap = nullptr;
 	Entity*			mPlayer = nullptr;
 	Camera			mCamera;
 	GUI::Container	mGUIContainer;
