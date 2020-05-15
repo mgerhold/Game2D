@@ -21,6 +21,7 @@ public:
 	void	generateAnimationStates(int spritesPerRow, int spritesPerColumn, Time duration, bool topToBottom = true);
 	bool	isPlaying() const;
 	void	setLooping(bool isLooping);
+	void	setHold(bool hold);
 
 private:
 	struct AnimationState {
@@ -41,4 +42,6 @@ private:
 	size_t	mCurrentStateIndex;
 	Sprite	mSprite;
 	bool	mIsPlaying;
+	bool	mHold;
+	bool	mIsHolding;
 };

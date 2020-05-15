@@ -9,6 +9,7 @@
 #include "BoxCollider.h"
 #include "TilemapCollider.h"
 #include "PlayerController.h"
+#include "AnimationController.h"
 #include <vector>
 #include <utility> // std::pair
 
@@ -26,6 +27,8 @@ namespace {
 		{ TextureID::Button2Selected, "textures/button2_selected.png" },
 		{ TextureID::Button2Active, "textures/button2_active.png" },
 		{ TextureID::PlayerIdle, "textures/player_idle.png" },
+		{ TextureID::PlayerRun, "textures/player_run.png" },
+		{ TextureID::PlayerJump, "textures/player_jump.png" },
 	};
 }
 
@@ -58,13 +61,11 @@ GameState::GameState(StateStack* stateStack)
 	auto player = std::make_unique<Entity>(&mEntityContainer, getContext());
 	mPlayer = player.get();
 	// player.AnimationRenderer
-	auto playerRenderer = std::make_unique<AnimationRenderer>();
-	Animation idleAnim;
-	idleAnim.setTexture(getContext().textureHolder.get(TextureID::PlayerIdle));
-	idleAnim.generateAnimationStates(4, 1, Time::seconds(0.2f));
-	idleAnim.setLooping(true);
-	playerRenderer->setAnimation(idleAnim);
-	mPlayer->addComponent(std::move(playerRenderer));
+	auto animationRenderer = std::make_unique<AnimationRenderer>();
+	mPlayer->addComponent(std::move(animationRenderer));
+	// player.AnimationController
+	auto animationController = std::make_unique<AnimationController>();
+	mPlayer->addComponent(std::move(animationController));
 	// player.BoxCollider
 	auto boxCollider = std::make_unique<BoxCollider>();
 	player->addComponent(std::move(boxCollider));

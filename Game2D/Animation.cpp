@@ -1,11 +1,14 @@
 #include "Animation.h"
 #include <iostream>
+#include <numeric>
 
 Animation::Animation()
 	: mTexture(nullptr)
 	, mIsLooping(false)
 	, mCurrentStateIndex(0)
 	, mIsPlaying(false)
+	, mHold(false)
+	, mIsHolding(false)
 {}
 
 glm::ivec2 Animation::getSize() const {
@@ -22,16 +25,23 @@ void Animation::setTexture(const Texture& texture) {
 	mTexture = &texture;
 	mSprite.setTexture(texture);
 	mIsPlaying = true;
+	mIsHolding = false;
 }
 
 void Animation::update() {
 	if (mIsPlaying) {
 		size_t newStateIndex = calculateCurrentStateIndex();
 		if (newStateIndex != mCurrentStateIndex) {
-			if (newStateIndex == 0 && !mIsLooping)
-				mIsPlaying = false;
-			mCurrentStateIndex = newStateIndex;
-			mSprite.setTextureRect(mAnimationStates[mCurrentStateIndex].textureRect);
+			if (newStateIndex == 0 && !mIsLooping) {
+				if (mHold) {
+					mIsHolding = true;
+				} else {
+					mIsPlaying = false;
+				}
+			} else if (!mIsHolding) {
+				mCurrentStateIndex = newStateIndex;
+				mSprite.setTextureRect(mAnimationStates[mCurrentStateIndex].textureRect);
+			}
 		}
 	}
 }
@@ -76,6 +86,10 @@ void Animation::setLooping(bool isLooping) {
 	mIsLooping = isLooping;
 }
 
+void Animation::setHold(bool hold) {
+	mHold = hold;
+}
+
 void Animation::draw(const Window& window, RenderStates states) const {
 	if (mIsPlaying) {
 		states.transform *= getTransform();
@@ -103,9 +117,9 @@ size_t Animation::calculateCurrentStateIndex() {
 }
 
 Time Animation::getDurationSum() const {
-	Time result;
-	for (const auto& animationState : mAnimationStates) {
-		result += animationState.duration;
-	}
-	return result;
+	return std::accumulate(mAnimationStates.begin(), mAnimationStates.end(), Time::Zero,
+		[] (Time sum, const AnimationState& animationState) -> Time {
+			return sum + animationState.duration;
+		}
+	);	
 }

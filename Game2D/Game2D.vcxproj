@@ -171,6 +171,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Animation.cpp" />
+    <ClCompile Include="AnimationController.cpp" />
     <ClCompile Include="AnimationRenderer.cpp" />
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="AudioSystem.cpp" />
@@ -226,6 +227,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Animation.h" />
+    <ClInclude Include="AnimationController.h" />
     <ClInclude Include="AnimationRenderer.h" />
     <ClInclude Include="AppContext.h" />
     <ClInclude Include="Application.h" />

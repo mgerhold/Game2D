@@ -25,6 +25,8 @@ enum class TextureID {
 	Button2Selected,
 	Button2Active,
 	PlayerIdle,
+	PlayerRun,
+	PlayerJump,
 };
 
 enum class SoundID {
