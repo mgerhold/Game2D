@@ -10,6 +10,7 @@
 #include "TilemapCollider.h"
 #include "PlayerController.h"
 #include "AnimationController.h"
+#include "ParallaxController.h"
 #include <vector>
 #include <utility> // std::pair
 
@@ -29,6 +30,7 @@ namespace {
 		{ TextureID::PlayerIdle, "textures/player_idle.png" },
 		{ TextureID::PlayerRun, "textures/player_run.png" },
 		{ TextureID::PlayerJump, "textures/player_jump.png" },
+		{ TextureID::Background, "textures/checkerboard.jpg" },
 	};
 }
 
@@ -40,6 +42,19 @@ GameState::GameState(StateStack* stateStack)
 		getContext().textureHolder.load(id, filename);
 		getContext().textureHolder.get(id).setTextureFiltering(Texture::Filtering::Nearest);
 	}
+
+	// parallax scrolling background tile
+	auto background = std::make_unique<Entity>(&mEntityContainer, getContext());
+	Sprite backgroundSprite;
+	getContext().textureHolder.get(TextureID::Background).setTextureWrap(true);
+	backgroundSprite.setTexture(getContext().textureHolder.get(TextureID::Background));
+	backgroundSprite.setTiling(20, 20);
+	backgroundSprite.centerOrigin();
+	auto backgroundSpriteRenderer = std::make_unique<SpriteRenderer>(backgroundSprite);
+	background->addComponent(std::move(backgroundSpriteRenderer));
+	auto backgroundParallaxController = std::make_unique<ParallaxController>(mCamera, glm::vec2(0.2f));
+	background->addComponent(std::move(backgroundParallaxController));
+	mEntityContainer.add(std::move(background));
 
 	// level entity
 	auto tilemap = std::make_unique<Entity>(&mEntityContainer, getContext());

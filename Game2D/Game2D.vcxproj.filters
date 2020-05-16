@@ -177,6 +177,9 @@
     <ClCompile Include="AnimationController.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="ParallaxController.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Window.h">
@@ -366,6 +369,9 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="AnimationController.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="ParallaxController.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>

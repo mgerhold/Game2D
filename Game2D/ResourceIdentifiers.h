@@ -27,6 +27,7 @@ enum class TextureID {
 	PlayerIdle,
 	PlayerRun,
 	PlayerJump,
+	Background,
 };
 
 enum class SoundID {
