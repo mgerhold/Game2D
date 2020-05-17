@@ -34,7 +34,7 @@ namespace {
 		{ TextureID::PlayerRunReversed, "textures/player_run_r.png" },
 		{ TextureID::PlayerJump, "textures/player_jump.png" },
 		{ TextureID::PlayerJumpReversed, "textures/player_jump_r.png" },
-		{ TextureID::Background, "textures/checkerboard.jpg" },
+		{ TextureID::Background, "textures/bg.jpg" },
 	};
 }
 
@@ -48,6 +48,8 @@ GameState::GameState(StateStack* stateStack)
 		getContext().textureHolder.get(id).setTextureFiltering(Texture::Filtering::Nearest);
 	}
 
+	getContext().textureHolder.get(TextureID::Background).setTextureFiltering(Texture::Filtering::Linear);
+
 	// parallax scrolling background tile
 	auto background = std::make_unique<Entity>(&mEntityContainer, getContext());
 	Sprite backgroundSprite;
@@ -55,6 +57,7 @@ GameState::GameState(StateStack* stateStack)
 	backgroundSprite.setTexture(getContext().textureHolder.get(TextureID::Background));
 	backgroundSprite.setTiling(20, 20);
 	backgroundSprite.centerOrigin();
+	backgroundSprite.setScale(0.2f, 0.2f);
 	auto backgroundSpriteRenderer = std::make_unique<SpriteRenderer>(backgroundSprite);
 	background->addComponent(std::move(backgroundSpriteRenderer));
 	auto backgroundParallaxController = std::make_unique<ParallaxController>(mCamera, glm::vec2(0.2f));
