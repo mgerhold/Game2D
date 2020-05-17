@@ -11,6 +11,7 @@
 #include "PlayerController.h"
 #include "AnimationController.h"
 #include "ParallaxController.h"
+#include "TextRenderer.h"
 #include <vector>
 #include <utility> // std::pair
 
@@ -28,8 +29,11 @@ namespace {
 		{ TextureID::Button2Selected, "textures/button2_selected.png" },
 		{ TextureID::Button2Active, "textures/button2_active.png" },
 		{ TextureID::PlayerIdle, "textures/player_idle.png" },
+		{ TextureID::PlayerIdleReversed, "textures/player_idle_r.png" },
 		{ TextureID::PlayerRun, "textures/player_run.png" },
+		{ TextureID::PlayerRunReversed, "textures/player_run_r.png" },
 		{ TextureID::PlayerJump, "textures/player_jump.png" },
+		{ TextureID::PlayerJumpReversed, "textures/player_jump_r.png" },
 		{ TextureID::Background, "textures/checkerboard.jpg" },
 	};
 }
@@ -37,6 +41,7 @@ namespace {
 GameState::GameState(StateStack* stateStack)
 	: State(stateStack)
 	, mEntityContainer(getContext())
+	, mHourglass(getContext(), mEntityContainer)
 {
 	for (const auto& [id, filename] : neededTextures) {
 		getContext().textureHolder.load(id, filename);
@@ -95,6 +100,11 @@ GameState::GameState(StateStack* stateStack)
 	mEntityContainer.add(std::move(player));
 
 	/**** GUI STUFF STARTS HERE ****/
+	// hourglass
+	Text hourglass;
+	hourglass.setFont(getContext().fontHolder.get(FontID::Default), 48);
+	hourglass.setString("Test");
+
 	// tilemapComponent selection
 	auto selectionEntity = std::make_unique<Entity>(&mEntityContainer, getContext());
 	Sprite selectionSprite;
@@ -163,6 +173,7 @@ GameState::GameState(StateStack* stateStack)
 
 	// awake entities
 	mEntityContainer.awake();
+	mHourglass.awake();
 
 	// load map
 	{
@@ -205,6 +216,8 @@ bool GameState::update(Time dt) {
 		);
 	}
 
+	mHourglass.update(dt);
+
 	return true;
 }
 
@@ -212,6 +225,7 @@ void GameState::draw(const Window& window) const {
 	window.draw(mEntityContainer, mCamera);
 	window.draw(mGUIContainer);
 	window.draw(mPreviewSprite);
+	window.draw(mHourglass);
 }
 
 bool GameState::handleEvent(Event e) {

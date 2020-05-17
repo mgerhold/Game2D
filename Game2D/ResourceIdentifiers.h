@@ -25,8 +25,11 @@ enum class TextureID {
 	Button2Selected,
 	Button2Active,
 	PlayerIdle,
+	PlayerIdleReversed,
 	PlayerRun,
+	PlayerRunReversed,
 	PlayerJump,
+	PlayerJumpReversed,
 	Background,
 };
 

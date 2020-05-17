@@ -23,5 +23,6 @@ private:
 	AnimationRenderer*		mAnimationRenderer = nullptr;
 	AnimationController*	mAnimationController = nullptr;
 	bool					mIsTouchingMap = false;
+	bool					mIsReversed = false;
 	glm::vec2				mAnimationScale = glm::vec2(1.f);
 };

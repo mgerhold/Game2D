@@ -17,7 +17,8 @@ bool PlayerController::handleEvent(Event e) {
 			switch (e.key) {
 				case Key::Space:
 					if (mIsTouchingMap)
-						mRigidBody->accelerate(glm::vec2(0.f, 300.f));
+						// TODO: Remove magic numbers
+						mRigidBody->accelerate(glm::vec2(0.f, mRigidBody->getGravity().y < 0.f ? 300.f : -300.f));
 					return true;
 			}
 			break;
@@ -39,8 +40,8 @@ void PlayerController::onAwake() {
 		auto tilemap = info.other->getComponent<Tilemap>();
 		if (tilemap) {
 			mIsTouchingMap = true;
-			if (*mAnimationController->getCurrentAnimationName() != "idle"s)
-				mAnimationController->setAnimation("idle");
+			/*if (*mAnimationController->getCurrentAnimationName() != "idle"s)
+				mAnimationController->setAnimation("idle");*/
 			std::cout << "Touching\n";
 		}
 	});
@@ -49,8 +50,9 @@ void PlayerController::onAwake() {
 		auto tilemap = info.other->getComponent<Tilemap>();
 		if (tilemap) {
 			mIsTouchingMap = false;
-			if (*mAnimationController->getCurrentAnimationName() != "jump"s)
-				mAnimationController->setAnimation("jump");
+			const auto targetAnimationName = mIsReversed ? "jump_reversed"s : "jump"s;
+			if (*mAnimationController->getCurrentAnimationName() != targetAnimationName)
+				mAnimationController->setAnimation(targetAnimationName);
 			std::cout << "Not touching\n";
 		}
 	});
@@ -59,27 +61,37 @@ void PlayerController::onAwake() {
 void PlayerController::onUpdate(Time dt) {
 	if (mWindow->isKeyPressed(Key::Right)) {
 		mRigidBody->setVelocity(glm::vec2(80.f, mRigidBody->getVelocity().y));
-		if (mIsTouchingMap && *mAnimationController->getCurrentAnimationName() != "run"s) {
-			mAnimationController->setAnimation("run");
+		const auto targetAnimationName = mIsReversed ? "run_reversed"s : "run"s;
+		if (mIsTouchingMap && *mAnimationController->getCurrentAnimationName() != targetAnimationName) {
+			mAnimationController->setAnimation(targetAnimationName);
 		}
 	}
 	if (mWindow->isKeyPressed(Key::Left)) {
 		mRigidBody->setVelocity(glm::vec2(-80.f, mRigidBody->getVelocity().y));
-		if (mIsTouchingMap && *mAnimationController->getCurrentAnimationName() != "run"s) {
-			mAnimationController->setAnimation("run");
+		const auto targetAnimationName = mIsReversed ? "run_reversed"s : "run"s;
+		if (mIsTouchingMap && *mAnimationController->getCurrentAnimationName() != targetAnimationName) {
+			mAnimationController->setAnimation(targetAnimationName);
 		}
 	}
 	if (!mWindow->isKeyPressed(Key::Left) && !mWindow->isKeyPressed(Key::Right)) {
 		mRigidBody->setVelocity(glm::vec2(0.f, mRigidBody->getVelocity().y));
-		if (mIsTouchingMap && *mAnimationController->getCurrentAnimationName() != "idle"s) {
-			mAnimationController->setAnimation("idle");
+		const auto targetAnimationName = mIsReversed ? "idle_reversed"s : "idle"s;
+		if (mIsTouchingMap && *mAnimationController->getCurrentAnimationName() != targetAnimationName) {
+			mAnimationController->setAnimation(targetAnimationName);
 		}
 	}
 
 	if (mRigidBody->getVelocity().x > 0.f && mAnimationScale.x != 1.f) {
-		mAnimationScale = glm::vec2(1.f, 1.f);
+		mAnimationScale = glm::vec2(1.f, mAnimationScale.y);
 	} else if (mRigidBody->getVelocity().x < 0.f && mAnimationScale.x != -1.f) {
-		mAnimationScale = glm::vec2(-1.f, 1.f);
+		mAnimationScale = glm::vec2(-1.f, mAnimationScale.y);
+	}
+	if (!mIsReversed && mRigidBody->getGravity().y > 0.f && mIsTouchingMap && mRigidBody->getVelocity().y > 0.f) {
+		std::cout << "Reversed\n";
+		mIsReversed = true;
+	} else if (mIsReversed && mRigidBody->getGravity().y < 0.f && mIsTouchingMap && mRigidBody->getVelocity().y < 0.f) {
+		std::cout << "Not Reversed\n";
+		mIsReversed = false;
 	}
 	if (mAnimationRenderer->getAnimation().getScale() != mAnimationScale)
 		mAnimationRenderer->getAnimation().setScale(mAnimationScale);
@@ -93,12 +105,26 @@ void PlayerController::setupAnimations() {
 	idleAnimation.setOrigin(idleAnimation.getSize().x / 2.f, 0.f);
 	mAnimationController->addAnimationState("idle", idleAnimation);
 
+	Animation idleAnimationReversed;
+	idleAnimationReversed.setTexture(getEntity()->getContext().textureHolder.get(TextureID::PlayerIdleReversed));
+	idleAnimationReversed.generateAnimationStates(4, 1, Time::seconds(0.2f));
+	idleAnimationReversed.setLooping(true);
+	idleAnimationReversed.setOrigin(idleAnimationReversed.getSize().x / 2.f, 0.f);
+	mAnimationController->addAnimationState("idle_reversed", idleAnimationReversed);
+
 	Animation runAnimation;
 	runAnimation.setTexture(getEntity()->getContext().textureHolder.get(TextureID::PlayerRun));
 	runAnimation.generateAnimationStates(4, 1, Time::seconds(0.1f));
 	runAnimation.setLooping(true);
 	runAnimation.setOrigin(runAnimation.getSize().x / 2.f, 0.f);
 	mAnimationController->addAnimationState("run", runAnimation);
+
+	Animation runAnimationReversed;
+	runAnimationReversed.setTexture(getEntity()->getContext().textureHolder.get(TextureID::PlayerRunReversed));
+	runAnimationReversed.generateAnimationStates(4, 1, Time::seconds(0.1f));
+	runAnimationReversed.setLooping(true);
+	runAnimationReversed.setOrigin(runAnimationReversed.getSize().x / 2.f, 0.f);
+	mAnimationController->addAnimationState("run_reversed", runAnimationReversed);
 
 	Animation jumpAnimation;
 	jumpAnimation.setTexture(getEntity()->getContext().textureHolder.get(TextureID::PlayerJump));
@@ -107,4 +133,12 @@ void PlayerController::setupAnimations() {
 	jumpAnimation.setHold(true);
 	jumpAnimation.setOrigin(runAnimation.getSize().x / 2.f, 0.f);
 	mAnimationController->addAnimationState("jump", jumpAnimation);
+
+	Animation jumpAnimationReversed;
+	jumpAnimationReversed.setTexture(getEntity()->getContext().textureHolder.get(TextureID::PlayerJumpReversed));
+	jumpAnimationReversed.generateAnimationStates(1, 1, Time::seconds(1.f));
+	jumpAnimationReversed.setLooping(false);
+	jumpAnimationReversed.setHold(true);
+	jumpAnimationReversed.setOrigin(runAnimation.getSize().x / 2.f, 0.f);
+	mAnimationController->addAnimationState("jump_reversed", jumpAnimationReversed);
 }

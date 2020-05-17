@@ -5,6 +5,7 @@
 #include "Camera.h"
 #include "Container.h"
 #include "Sprite.h"
+#include "Hourglass.h"
 
 class GameState : public State {
 public:
@@ -30,4 +31,5 @@ private:
 	GUI::Container	mGUIContainer;
 	Sprite			mPreviewSprite;
 	int				mSelectedPreviewTile = 1;
+	Hourglass		mHourglass;
 };
