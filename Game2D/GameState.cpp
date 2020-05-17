@@ -28,12 +28,12 @@ namespace {
 		{ TextureID::Button2Normal, "textures/button2_normal.png" },
 		{ TextureID::Button2Selected, "textures/button2_selected.png" },
 		{ TextureID::Button2Active, "textures/button2_active.png" },
-		{ TextureID::PlayerIdle, "textures/player_idle.png" },
-		{ TextureID::PlayerIdleReversed, "textures/player_idle_r.png" },
-		{ TextureID::PlayerRun, "textures/player_run.png" },
-		{ TextureID::PlayerRunReversed, "textures/player_run_r.png" },
-		{ TextureID::PlayerJump, "textures/player_jump.png" },
-		{ TextureID::PlayerJumpReversed, "textures/player_jump_r.png" },
+		{ TextureID::PlayerIdle, "textures/catIdle.png" },
+		{ TextureID::PlayerIdleReversed, "textures/catIdle_reversed.png" },
+		{ TextureID::PlayerRun, "textures/catWalk.png" },
+		{ TextureID::PlayerRunReversed, "textures/catWalk_reversed.png" },
+		{ TextureID::PlayerJump, "textures/catJump.png" },
+		{ TextureID::PlayerJumpReversed, "textures/catJump_reversed.png" },
 		{ TextureID::Background, "textures/bg.jpg" },
 	};
 }
@@ -99,7 +99,8 @@ GameState::GameState(StateStack* stateStack)
 	// player.PlayerController
 	auto playerController = std::make_unique<PlayerController>();
 	player->addComponent(std::move(playerController));
-	player->setPosition(20.f, 90.f);
+	//player->setPosition(20.f, 90.f);
+	player->setPosition(200.f, 500.f);
 	mEntityContainer.add(std::move(player));
 
 	/**** GUI STUFF STARTS HERE ****/

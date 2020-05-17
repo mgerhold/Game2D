@@ -100,14 +100,14 @@ void PlayerController::onUpdate(Time dt) {
 void PlayerController::setupAnimations() {
 	Animation idleAnimation;
 	idleAnimation.setTexture(getEntity()->getContext().textureHolder.get(TextureID::PlayerIdle));
-	idleAnimation.generateAnimationStates(4, 1, Time::seconds(0.2f));
+	idleAnimation.generateAnimationStates(2, 1, Time::seconds(0.2f));
 	idleAnimation.setLooping(true);
 	idleAnimation.setOrigin(idleAnimation.getSize().x / 2.f, 0.f);
 	mAnimationController->addAnimationState("idle", idleAnimation);
 
 	Animation idleAnimationReversed;
 	idleAnimationReversed.setTexture(getEntity()->getContext().textureHolder.get(TextureID::PlayerIdleReversed));
-	idleAnimationReversed.generateAnimationStates(4, 1, Time::seconds(0.2f));
+	idleAnimationReversed.generateAnimationStates(2, 1, Time::seconds(0.2f));
 	idleAnimationReversed.setLooping(true);
 	idleAnimationReversed.setOrigin(idleAnimationReversed.getSize().x / 2.f, 0.f);
 	mAnimationController->addAnimationState("idle_reversed", idleAnimationReversed);
