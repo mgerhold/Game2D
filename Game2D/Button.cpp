@@ -1,4 +1,5 @@
 #include "Button.h"
+#include <iostream>
 
 GUI::Button::Button()
 	: GUIComponent()
@@ -133,5 +134,8 @@ void GUI::Button::centerText() {
 
 bool GUI::Button::isMouseInside(const Event& event, const Window& window) const {
 	auto pos = window.windowToWorldCoords(glm::vec2(event.mousePosition.x, event.mousePosition.y));
+
+	auto bounds = getWorldBounds();
+
 	return getWorldBounds().isInside(pos.x, pos.y);
 }

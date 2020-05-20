@@ -96,7 +96,7 @@ FloatRect Transformable::getLocalBounds() const {
 }
 
 FloatRect Transformable::getWorldBounds() const {
-	auto transform = getTransform();
+	auto transform = getTransform();	
 	auto local = getLocalBounds();
 	glm::vec4 p1 = glm::vec4(local.left, local.bottom, 0.f, 1.f);
 	glm::vec4 p2 = glm::vec4(local.right, local.top, 0.f, 1.f);

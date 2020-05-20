@@ -1,4 +1,5 @@
 #include "MainMenuState.h"
+#include <iostream>
 
 MainMenuState::MainMenuState(StateStack* stateStack)
 	: State(stateStack) {
@@ -18,10 +19,13 @@ MainMenuState::MainMenuState(StateStack* stateStack)
 	mExitButton->setActiveTexture(getContext().textureHolder.get(TextureID::ButtonActive));
 	mExitButton->setString("Exit");
 	mExitButton->setFont(getContext().fontHolder.get(FontID::Default), 20);
-	mExitButton->centerOrigin();
+	mExitButton->setPosition(-mExitButton->getWidth() / 2.f, 0.f);
 	mExitButton->setCallbackFunc([this]() {
 		requestStackClear();
 	});
+
+	auto bounds = mExitButton->getLocalBounds();
+	std::cout << bounds.left << ", " << bounds.bottom << " <=> " << bounds.right << ", " << bounds.top << "\n";
 
 	mTestButton = std::make_shared<GUI::Button>();
 	mTestButton->setNormalTexture(getContext().textureHolder.get(TextureID::ButtonNormal));
@@ -29,8 +33,7 @@ MainMenuState::MainMenuState(StateStack* stateStack)
 	mTestButton->setActiveTexture(getContext().textureHolder.get(TextureID::ButtonActive));
 	mTestButton->setString("Play");
 	mTestButton->setFont(getContext().fontHolder.get(FontID::Default), 20);
-	mTestButton->centerOrigin();
-	mTestButton->setPosition(0.f, mTestButton->getHeight() + 20.f);
+	mTestButton->setPosition(-mTestButton->getWidth() / 2.f, mTestButton->getHeight() + 20.f);
 	mTestButton->setCallbackFunc([this]() {
 		requestStackClear();
 		requestStackPush(StateID::Game);
@@ -42,8 +45,7 @@ MainMenuState::MainMenuState(StateStack* stateStack)
 	mBackButton->setActiveTexture(getContext().textureHolder.get(TextureID::ButtonActive));
 	mBackButton->setString("Back");
 	mBackButton->setFont(getContext().fontHolder.get(FontID::Default), 20);
-	mBackButton->centerOrigin();
-	mBackButton->setPosition(0.f, 2.f * (mTestButton->getHeight() + 20.f));
+	mBackButton->setPosition(-mBackButton->getWidth() / 2.f, 2.f * (mTestButton->getHeight() + 20.f));
 	mBackButton->setCallbackFunc([this]() {
 		requestStackPop();
 		requestStackPush(StateID::Title);
@@ -58,7 +60,7 @@ MainMenuState::~MainMenuState() {
 	getContext().textureHolder.unload(TextureID::Checkerboard);
 }
 
-bool MainMenuState::update(Time dt) {
+bool MainMenuState::update(Time dt) {	
 	mCheckerboard.setRotation(mCheckerboard.getRotation() + glm::radians(40.f * dt.asSeconds()));
 	return true;
 }

@@ -32,8 +32,8 @@ Application::Application()
 	mFontHolder.load(FontID::Default, "fonts/arial.ttf");
 
 	registerStates();
-	//mStateStack.push(StateID::Title);
-	mStateStack.push(StateID::Game);
+	mStateStack.push(StateID::Title);
+	//mStateStack.push(StateID::Game);
 }
 
 void Application::run() {
@@ -45,20 +45,18 @@ void Application::run() {
 	int updateFrames = 0;
 	int renderFrames = 0;
 
-	while (!mWindow.shouldClose()) {
+	while (!mWindow.shouldClose()) {		
 		while ((currentTime = clock.getElapsedTime()) >= lastElapsed + Time::seconds(1.f) / mUpdatesPerSecond) {
-			Time dt = currentTime - lastElapsed;
-			lastElapsed = currentTime;
+			lastElapsed += Time::seconds(1.f) / mUpdatesPerSecond;
 			updateFrames++;
 
 			// update
-			mStateStack.update(dt);			
+			mStateStack.update(Time::seconds(1.f) / mUpdatesPerSecond);
 
 			// process events
 			Window::processEvents();
 			while (mWindow.hasEvent()) {
 				Event e = mWindow.pollEvent();
-
 				mStateStack.handleEvent(e);
 			}
 		}
