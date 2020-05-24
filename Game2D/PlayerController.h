@@ -25,4 +25,6 @@ private:
 	bool					mIsTouchingMap = false;
 	bool					mIsReversed = false;
 	glm::vec2				mAnimationScale = glm::vec2(1.f);
+	const float				JumpAcceleration = 2000.f;
+	const float				MovementVelocity = 600.f;
 };

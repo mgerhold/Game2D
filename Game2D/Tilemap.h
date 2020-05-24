@@ -21,6 +21,7 @@ public:
 	Tile				getTile(int x, int y) const;
 	int					getTilemapTilesPerRow() const;
 	int					getTilemapTilesPerColumn() const;
+	void				fill(const Tile& tile);
 
 private:
 	virtual void		onAwake() override;

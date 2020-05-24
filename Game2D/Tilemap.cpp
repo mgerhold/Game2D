@@ -64,6 +64,17 @@ int Tilemap::getTilemapTilesPerColumn() const {
 	return mTexture->getSize().y / mTileHeight;
 }
 
+void Tilemap::fill(const Tile& tile) {
+	for (int x = 0; x < mWidth; x++) {
+		for (int y = 0; y < mHeight; y++) {
+			setTile(x, y, tile);
+		}
+	}
+	auto collider = getEntity()->getComponent<TilemapCollider>();
+	if (collider)
+		collider->recalculateBoxes();
+}
+
 void Tilemap::onAwake() {
 
 }
@@ -103,10 +114,10 @@ void Tilemap::updateVertexArrayAt(int x, int y) {
 
 
 	glm::vec2 uvs[4];
-	uvs[0] = glm::vec2(static_cast<float>(offsetX) / texWidth, static_cast<float>(offsetY) / texHeight);
-	uvs[1] = glm::vec2(static_cast<float>(offsetX + mTileWidth) / texWidth, static_cast<float>(offsetY) / texHeight);
-	uvs[2] = glm::vec2(static_cast<float>(offsetX + mTileWidth) / texWidth, static_cast<float>(offsetY + mTileHeight) / texHeight);
-	uvs[3] = glm::vec2(static_cast<float>(offsetX) / texWidth, static_cast<float>(offsetY + mTileHeight) / texHeight);
+	uvs[0] = glm::vec2(static_cast<float>(offsetX) / (texWidth - 1), static_cast<float>(offsetY) / (texHeight - 1));
+	uvs[1] = glm::vec2(static_cast<float>(offsetX + mTileWidth) / (texWidth - 1), static_cast<float>(offsetY) / (texHeight - 1));
+	uvs[2] = glm::vec2(static_cast<float>(offsetX + mTileWidth) / (texWidth - 1), static_cast<float>(offsetY + mTileHeight - 1) / (texHeight - 1));
+	uvs[3] = glm::vec2(static_cast<float>(offsetX) / (texWidth - 1), static_cast<float>(offsetY + mTileHeight - 1) / (texHeight - 1));
 
 	const int index = (x + y * mWidth) * 4;
 	mVertexArray.modify(static_cast<size_t>(index) + 0, Vertex(glm::vec2((x + 0) * mTileWidth, (y + 0) * mTileWidth), uvs[0]));

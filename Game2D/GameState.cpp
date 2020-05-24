@@ -19,22 +19,22 @@ namespace {
 	using namespace std::literals::string_literals;
 
 	const std::vector<std::pair<TextureID, std::string>> neededTextures = {
-		{ TextureID::Tileset, "textures/tileset.png"s },
-		{ TextureID::TileSelection, "textures/selection.png" },
-		{ TextureID::ArrowLeft1, "textures/arrow_left1.png" },
-		{ TextureID::ArrowLeft2, "textures/arrow_left2.png" },
-		{ TextureID::ArrowRight1, "textures/arrow_right1.png" },
-		{ TextureID::ArrowRight2, "textures/arrow_right2.png" },
-		{ TextureID::Button2Normal, "textures/button2_normal.png" },
-		{ TextureID::Button2Selected, "textures/button2_selected.png" },
-		{ TextureID::Button2Active, "textures/button2_active.png" },
-		{ TextureID::PlayerIdle, "textures/catIdle.png" },
-		{ TextureID::PlayerIdleReversed, "textures/catIdle_reversed.png" },
-		{ TextureID::PlayerRun, "textures/catWalk.png" },
-		{ TextureID::PlayerRunReversed, "textures/catWalk_reversed.png" },
-		{ TextureID::PlayerJump, "textures/catJump.png" },
-		{ TextureID::PlayerJumpReversed, "textures/catJump_reversed.png" },
-		{ TextureID::Background, "textures/bg.jpg" },
+		{ TextureID::Tileset, "textures/tileset_new.png"s },
+		{ TextureID::TileSelection, "textures/selection.png"s },
+		{ TextureID::ArrowLeft1, "textures/arrow_left1.png"s },
+		{ TextureID::ArrowLeft2, "textures/arrow_left2.png"s },
+		{ TextureID::ArrowRight1, "textures/arrow_right1.png"s },
+		{ TextureID::ArrowRight2, "textures/arrow_right2.png"s },
+		{ TextureID::Button2Normal, "textures/button2_normal.png"s },
+		{ TextureID::Button2Selected, "textures/button2_selected.png"s },
+		{ TextureID::Button2Active, "textures/button2_active.png"s },
+		{ TextureID::PlayerIdle, "textures/catIdle.png"s },
+		{ TextureID::PlayerIdleReversed, "textures/catIdle_reversed.png"s },
+		{ TextureID::PlayerRun, "textures/catWalk.png"s },
+		{ TextureID::PlayerRunReversed, "textures/catWalk_reversed.png"s },
+		{ TextureID::PlayerJump, "textures/catJump.png"s },
+		{ TextureID::PlayerJumpReversed, "textures/catJump_reversed.png"s },
+		{ TextureID::Background, "textures/bg.jpg"s },
 	};
 }
 
@@ -49,6 +49,7 @@ GameState::GameState(StateStack* stateStack)
 	}
 
 	getContext().textureHolder.get(TextureID::Background).setTextureFiltering(Texture::Filtering::Linear);
+	getContext().textureHolder.get(TextureID::Tileset).setTextureWrap(false);
 
 	// parallax scrolling background tile
 	auto background = std::make_unique<Entity>(&mEntityContainer, getContext());
@@ -57,7 +58,7 @@ GameState::GameState(StateStack* stateStack)
 	backgroundSprite.setTexture(getContext().textureHolder.get(TextureID::Background));
 	backgroundSprite.setTiling(20, 20);
 	backgroundSprite.centerOrigin();
-	backgroundSprite.setScale(0.2f, 0.2f);
+	//backgroundSprite.setScale(0.2f, 0.2f);
 	auto backgroundSpriteRenderer = std::make_unique<SpriteRenderer>(backgroundSprite);
 	background->addComponent(std::move(backgroundSpriteRenderer));
 	auto backgroundParallaxController = std::make_unique<ParallaxController>(mCamera, glm::vec2(0.2f));
@@ -68,7 +69,7 @@ GameState::GameState(StateStack* stateStack)
 	auto tilemap = std::make_unique<Entity>(&mEntityContainer, getContext());
 	// tilemapComponent
 		// TODO: Remove magic numbers
-	auto tilemapComponent = std::make_unique<Tilemap>(100, 30, getContext().textureHolder.get(TextureID::Tileset), 16, 16);
+	auto tilemapComponent = std::make_unique<Tilemap>(100, 30, getContext().textureHolder.get(TextureID::Tileset), 180, 180);
 	tilemap->addComponent(std::move(tilemapComponent));
 	mTilemap = tilemap.get();
 	// savegame controller component
@@ -94,13 +95,14 @@ GameState::GameState(StateStack* stateStack)
 	player->addComponent(std::move(boxCollider));
 	// player.RigidBody
 	auto rigidBody = std::make_unique<RigidBody>();
-	rigidBody->setGravity(glm::vec2(0.f, -500.f));
+	rigidBody->setGravity(glm::vec2(0.f, -2000.f));
+	rigidBody->setDrag(0.01f);
 	player->addComponent(std::move(rigidBody));
 	// player.PlayerController
 	auto playerController = std::make_unique<PlayerController>();
 	player->addComponent(std::move(playerController));
 	//player->setPosition(20.f, 90.f);
-	player->setPosition(200.f, 500.f);
+	player->setPosition(550.f, 400.f);
 	mEntityContainer.add(std::move(player));
 
 	/**** GUI STUFF STARTS HERE ****/
@@ -170,10 +172,10 @@ GameState::GameState(StateStack* stateStack)
 	mPreviewSprite.setTexture(getContext().textureHolder.get(TextureID::Tileset));
 	updateSelectedPreviewTile();
 	mPreviewSprite.setPosition(-350.f, 300.f);
-	mPreviewSprite.setScale(glm::vec2(4.f));
+	mPreviewSprite.setScale(glm::vec2(0.5));
 
 	// camera settings
-	mCamera.setZoom(5.f);
+	mCamera.setZoom(0.5f);
 
 	// awake entities
 	mEntityContainer.awake();
@@ -183,6 +185,8 @@ GameState::GameState(StateStack* stateStack)
 	{
 		auto ptr = mTilemap->getComponent<SavegameController>();
 		ptr->loadLevel("level01.lvl");
+		//Tile tile{ .tilesetX = 4, .tilesetY = 3 };
+		//mTilemap->getComponent<Tilemap>()->fill(tile);
 	}
 }
 
@@ -196,7 +200,7 @@ bool GameState::update(Time dt) {
 	const auto& window = getContext().window;
 
 	mEntityContainer.update(dt);
-	constexpr float movementSpeed = 200.f;
+	/*constexpr float movementSpeed = 200.f;
 	if (window.isKeyPressed(Key::D))
 		mCamera.move(glm::vec2(movementSpeed, 0) * dt.asSeconds());
 	if (window.isKeyPressed(Key::A))
@@ -204,7 +208,7 @@ bool GameState::update(Time dt) {
 	if (window.isKeyPressed(Key::W))
 		mCamera.move(glm::vec2(0, movementSpeed) * dt.asSeconds());
 	if (window.isKeyPressed(Key::S))
-		mCamera.move(glm::vec2(0, -movementSpeed) * dt.asSeconds());
+		mCamera.move(glm::vec2(0, -movementSpeed) * dt.asSeconds());*/
 
 	auto* tilemap = mTilemap->getComponent<Tilemap>();
 	auto mousePos = window.windowToWorldCoords(window.getMousePosition(), mCamera);
@@ -221,6 +225,11 @@ bool GameState::update(Time dt) {
 	}
 
 	mHourglass.update(dt);
+
+	auto currentCameraPos = mCamera.getPosition();
+	auto targetPosition = mPlayer->getPosition();
+	auto lerpPosition = (targetPosition - currentCameraPos) * 0.8f * dt.asSeconds() + currentCameraPos;
+	mCamera.setPosition(lerpPosition);
 
 	return true;
 }

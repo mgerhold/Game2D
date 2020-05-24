@@ -31,7 +31,9 @@ glm::vec2 RigidBody::getGravity() const {
 	return mGravity;
 }
 
-void RigidBody::setDrag(float drag) {}
+void RigidBody::setDrag(float drag) {
+	mDrag = drag;
+}
 
 float RigidBody::getDrag() const {
 	return 0.0f;

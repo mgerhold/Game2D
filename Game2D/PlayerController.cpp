@@ -16,9 +16,8 @@ bool PlayerController::handleEvent(Event e) {
 		case Event::Type::KeyPress:
 			switch (e.key) {
 				case Key::Space:
-					if (mIsTouchingMap)
-						// TODO: Remove magic numbers
-						mRigidBody->accelerate(glm::vec2(0.f, mRigidBody->getGravity().y < 0.f ? 300.f : -300.f));
+					if (mIsTouchingMap)						
+						mRigidBody->accelerate(glm::vec2(0.f, mRigidBody->getGravity().y < 0.f ? JumpAcceleration : -JumpAcceleration));
 					return true;
 			}
 			break;
@@ -60,14 +59,14 @@ void PlayerController::onAwake() {
 
 void PlayerController::onUpdate(Time dt) {
 	if (mWindow->isKeyPressed(Key::Right)) {
-		mRigidBody->setVelocity(glm::vec2(80.f, mRigidBody->getVelocity().y));
+		mRigidBody->setVelocity(glm::vec2(MovementVelocity, mRigidBody->getVelocity().y));
 		const auto targetAnimationName = mIsReversed ? "run_reversed"s : "run"s;
 		if (mIsTouchingMap && *mAnimationController->getCurrentAnimationName() != targetAnimationName) {
 			mAnimationController->setAnimation(targetAnimationName);
 		}
 	}
 	if (mWindow->isKeyPressed(Key::Left)) {
-		mRigidBody->setVelocity(glm::vec2(-80.f, mRigidBody->getVelocity().y));
+		mRigidBody->setVelocity(glm::vec2(-MovementVelocity, mRigidBody->getVelocity().y));
 		const auto targetAnimationName = mIsReversed ? "run_reversed"s : "run"s;
 		if (mIsTouchingMap && *mAnimationController->getCurrentAnimationName() != targetAnimationName) {
 			mAnimationController->setAnimation(targetAnimationName);
