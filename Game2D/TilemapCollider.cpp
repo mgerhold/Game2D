@@ -102,8 +102,8 @@ std::optional<CollisionInfo> TilemapCollider::checkCollision(Collider* other) {
 			float maxPenetration = 0.f;
 			const CollisionInfo* ptr = nullptr;
 			for (const auto& c : collisions) {
-				float area = 0.f;
-				if (area = c.penetration.x * c.penetration.y > maxPenetration) {
+				float area = c.penetration.x * c.penetration.y;
+				if (area > maxPenetration) {
 					maxPenetration = area;
 					ptr = &c;
 				}
