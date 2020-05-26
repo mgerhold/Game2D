@@ -34,7 +34,9 @@ namespace {
 		{ TextureID::PlayerRunReversed, "textures/catWalk_reversed.png"s },
 		{ TextureID::PlayerJump, "textures/catJump.png"s },
 		{ TextureID::PlayerJumpReversed, "textures/catJump_reversed.png"s },
-		{ TextureID::Background, "textures/bg.jpg"s },
+		{ TextureID::Background, "textures/bg2.jpg"s },
+		{ TextureID::HourglassRunning, "textures/hourglassAnimation.png"s },
+		{ TextureID::HourglassTurning, "textures/hourglassTurnAnimation.png"s },
 	};
 }
 
@@ -228,7 +230,7 @@ bool GameState::update(Time dt) {
 
 	auto currentCameraPos = mCamera.getPosition();
 	auto targetPosition = mPlayer->getPosition();
-	auto lerpPosition = (targetPosition - currentCameraPos) * 0.8f * dt.asSeconds() + currentCameraPos;
+	auto lerpPosition = (targetPosition - currentCameraPos) * 0.99f * dt.asSeconds() + currentCameraPos;
 	mCamera.setPosition(lerpPosition);
 
 	return true;

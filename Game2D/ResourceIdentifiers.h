@@ -31,6 +31,8 @@ enum class TextureID {
 	PlayerJump,
 	PlayerJumpReversed,
 	Background,
+	HourglassRunning,
+	HourglassTurning,
 };
 
 enum class SoundID {

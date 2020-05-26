@@ -32,7 +32,12 @@ void Animation::update() {
 	if (mIsPlaying) {
 		size_t newStateIndex = calculateCurrentStateIndex();
 		if (newStateIndex != mCurrentStateIndex) {
+			// animation state just changed
 			if (newStateIndex == 0 && !mIsLooping) {
+				// animation has been played completely
+				if (!mIsHolding && mEndCallback)
+					mEndCallback();
+
 				if (mHold) {
 					mIsHolding = true;
 				} else {
@@ -88,6 +93,18 @@ void Animation::setLooping(bool isLooping) {
 
 void Animation::setHold(bool hold) {
 	mHold = hold;
+}
+
+void Animation::setAnimationEndCallback(CallbackFunc func) {
+	mEndCallback = func;
+}
+
+void Animation::reset() {
+	mClock.restart();
+	mIsPlaying = true;
+	mIsHolding = false;
+	mCurrentStateIndex = 0;
+	mSprite.setTextureRect(mAnimationStates.front().textureRect);
 }
 
 void Animation::draw(const Window& window, RenderStates states) const {

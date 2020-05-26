@@ -7,6 +7,7 @@
 #include "AppContext.h"
 #include "Clock.h"
 #include "EntityContainer.h"
+#include "Animation.h"
 
 class Entity;
 
@@ -20,10 +21,12 @@ private:
 	void					draw(const Window& window, RenderStates states) const override;
 
 private:
-	Text					mText;
 	AppContext				mContext;
 	Clock					mClock;
-	Time					mTimeLimit;
+	Time					mTimeLimit = Time::seconds(5.f);
 	Entity*					mPlayer = nullptr;
 	const EntityContainer&	mEntityContainer;
+	Animation				mAnimationRunning;
+	Animation				mAnimationTurning;
+	bool					mTurning = false;
 };
