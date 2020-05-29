@@ -27,6 +27,8 @@ void Hourglass::awake() {
 			mTurning = false;
 			mAnimationRunning.reset();
 		});
+
+	mSound.setSoundBuffer(mContext.soundBufferHolder.get(SoundID::HourglassFX));
 }
 
 void Hourglass::update(Time dt) {
@@ -37,6 +39,7 @@ void Hourglass::update(Time dt) {
 
 	if (mClock.getElapsedTime() >= mTimeLimit) {
 		// time has elapsed
+		mSound.play();
 		mClock.setElapsedTime(mClock.getElapsedTime() - mTimeLimit);
 		auto rb = mPlayer->getComponent<RigidBody>();
 		rb->setGravity(-rb->getGravity());

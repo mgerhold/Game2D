@@ -16,8 +16,10 @@ bool PlayerController::handleEvent(Event e) {
 		case Event::Type::KeyPress:
 			switch (e.key) {
 				case Key::Space:
-					if (mIsTouchingMap)						
+					if (mIsTouchingMap) {
 						mRigidBody->accelerate(glm::vec2(0.f, mRigidBody->getGravity().y < 0.f ? JumpAcceleration : -JumpAcceleration));
+						mJumpSound.play();
+					}
 					return true;
 			}
 			break;
@@ -26,6 +28,8 @@ bool PlayerController::handleEvent(Event e) {
 }
 
 void PlayerController::onAwake() {
+	mJumpSound.setSoundBuffer(getEntity()->getContext().soundBufferHolder.get(SoundID::PlayerJump));
+
 	mRigidBody = getEntity()->getComponent<RigidBody>();
 	mWindow = &(getEntity()->getContext().window);
 	mAnimationRenderer = getEntity()->getComponent<AnimationRenderer>();
@@ -99,14 +103,14 @@ void PlayerController::onUpdate(Time dt) {
 void PlayerController::setupAnimations() {
 	Animation idleAnimation;
 	idleAnimation.setTexture(getEntity()->getContext().textureHolder.get(TextureID::PlayerIdle));
-	idleAnimation.generateAnimationStates(2, 1, Time::seconds(0.2f));
+	idleAnimation.generateAnimationStates(2, 1, Time::seconds(0.4f));
 	idleAnimation.setLooping(true);
 	idleAnimation.setOrigin(idleAnimation.getSize().x / 2.f, 0.f);
 	mAnimationController->addAnimationState("idle", idleAnimation);
 
 	Animation idleAnimationReversed;
 	idleAnimationReversed.setTexture(getEntity()->getContext().textureHolder.get(TextureID::PlayerIdleReversed));
-	idleAnimationReversed.generateAnimationStates(2, 1, Time::seconds(0.2f));
+	idleAnimationReversed.generateAnimationStates(2, 1, Time::seconds(0.4f));
 	idleAnimationReversed.setLooping(true);
 	idleAnimationReversed.setOrigin(idleAnimationReversed.getSize().x / 2.f, 0.f);
 	mAnimationController->addAnimationState("idle_reversed", idleAnimationReversed);

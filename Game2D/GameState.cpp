@@ -35,8 +35,13 @@ namespace {
 		{ TextureID::PlayerJump, "textures/catJump.png"s },
 		{ TextureID::PlayerJumpReversed, "textures/catJump_reversed.png"s },
 		{ TextureID::Background, "textures/bg2.jpg"s },
-		{ TextureID::HourglassRunning, "textures/hourglassAnimation.png"s },
+		{ TextureID::HourglassRunning, "textures/hourglassAnimation2.png"s },
 		{ TextureID::HourglassTurning, "textures/hourglassTurnAnimation.png"s },
+	};
+
+	const std::vector<std::pair<SoundID, std::string>> neededSounds = {
+		{ SoundID::HourglassFX, "sfx/sbk_96.wav"s },
+		{ SoundID::PlayerJump, "sfx/Jump.wav"s },
 	};
 }
 
@@ -45,6 +50,7 @@ GameState::GameState(StateStack* stateStack)
 	, mEntityContainer(getContext())
 	, mHourglass(getContext(), mEntityContainer)
 {
+	// load textures
 	for (const auto& [id, filename] : neededTextures) {
 		getContext().textureHolder.load(id, filename);
 		getContext().textureHolder.get(id).setTextureFiltering(Texture::Filtering::Nearest);
@@ -52,6 +58,15 @@ GameState::GameState(StateStack* stateStack)
 
 	getContext().textureHolder.get(TextureID::Background).setTextureFiltering(Texture::Filtering::Linear);
 	getContext().textureHolder.get(TextureID::Tileset).setTextureWrap(false);
+
+	// load sounds
+	for (const auto& [id, filename] : neededSounds) {
+		getContext().soundBufferHolder.load(id, filename);
+	}
+
+	// open music
+	mMusic.openFromFile("music/SpaceCat.mp3");
+	mMusic.setVolume(0.5f);
 
 	// parallax scrolling background tile
 	auto background = std::make_unique<Entity>(&mEntityContainer, getContext());
@@ -190,11 +205,19 @@ GameState::GameState(StateStack* stateStack)
 		//Tile tile{ .tilesetX = 4, .tilesetY = 3 };
 		//mTilemap->getComponent<Tilemap>()->fill(tile);
 	}
+
+	mMusic.play(-1);
 }
 
 GameState::~GameState() {
+	// unload textures
 	for (const auto& [id, filename] : neededTextures) {
 		getContext().textureHolder.unload(id);
+	}
+
+	// unload sounds
+	for (const auto& [id, filename] : neededSounds) {
+		getContext().soundBufferHolder.unload(id);
 	}
 }
 

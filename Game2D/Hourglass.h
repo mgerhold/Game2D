@@ -8,6 +8,7 @@
 #include "Clock.h"
 #include "EntityContainer.h"
 #include "Animation.h"
+#include "Sound.h"
 
 class Entity;
 
@@ -29,4 +30,5 @@ private:
 	Animation				mAnimationRunning;
 	Animation				mAnimationTurning;
 	bool					mTurning = false;
+	Sound					mSound;
 };

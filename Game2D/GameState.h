@@ -6,6 +6,7 @@
 #include "Container.h"
 #include "Sprite.h"
 #include "Hourglass.h"
+#include "Music.h"
 
 class GameState : public State {
 public:
@@ -32,4 +33,5 @@ private:
 	Sprite			mPreviewSprite;
 	int				mSelectedPreviewTile = 1;
 	Hourglass		mHourglass;
+	Music			mMusic;
 };

@@ -41,6 +41,8 @@ enum class SoundID {
 	Hats,
 	Crash,
 	Crow,
+	HourglassFX,
+	PlayerJump,
 };
 
 enum class FontID {
