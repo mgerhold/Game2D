@@ -33,6 +33,8 @@ enum class TextureID {
 	Background,
 	HourglassRunning,
 	HourglassTurning,
+	MainMenuBackground,
+	Logo,
 };
 
 enum class SoundID {
@@ -43,6 +45,7 @@ enum class SoundID {
 	Crow,
 	HourglassFX,
 	PlayerJump,
+	PlayerFall,
 };
 
 enum class FontID {

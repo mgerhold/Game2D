@@ -42,6 +42,7 @@ namespace {
 	const std::vector<std::pair<SoundID, std::string>> neededSounds = {
 		{ SoundID::HourglassFX, "sfx/sbk_96.wav"s },
 		{ SoundID::PlayerJump, "sfx/Jump.wav"s },
+		{ SoundID::PlayerFall, "sfx/fall.wav"s },
 	};
 }
 
@@ -73,7 +74,7 @@ GameState::GameState(StateStack* stateStack)
 	Sprite backgroundSprite;
 	getContext().textureHolder.get(TextureID::Background).setTextureWrap(true);
 	backgroundSprite.setTexture(getContext().textureHolder.get(TextureID::Background));
-	backgroundSprite.setTiling(20, 20);
+	backgroundSprite.setTiling(50, 50);
 	backgroundSprite.centerOrigin();
 	//backgroundSprite.setScale(0.2f, 0.2f);
 	auto backgroundSpriteRenderer = std::make_unique<SpriteRenderer>(backgroundSprite);
@@ -119,7 +120,7 @@ GameState::GameState(StateStack* stateStack)
 	auto playerController = std::make_unique<PlayerController>();
 	player->addComponent(std::move(playerController));
 	//player->setPosition(20.f, 90.f);
-	player->setPosition(550.f, 400.f);
+	//player->setPosition(550.f, 400.f);
 	mEntityContainer.add(std::move(player));
 
 	/**** GUI STUFF STARTS HERE ****/
@@ -127,15 +128,6 @@ GameState::GameState(StateStack* stateStack)
 	Text hourglass;
 	hourglass.setFont(getContext().fontHolder.get(FontID::Default), 48);
 	hourglass.setString("Test");
-
-	// tilemapComponent selection
-	auto selectionEntity = std::make_unique<Entity>(&mEntityContainer, getContext());
-	Sprite selectionSprite;
-	selectionSprite.setTexture(getContext().textureHolder.get(TextureID::TileSelection));
-	auto selectionSpriteRenderer = std::make_unique<SpriteRenderer>(selectionSprite);
-	selectionEntity->addComponent(std::move(selectionSpriteRenderer));
-	mSelectionEntity = selectionEntity.get();
-	mEntityContainer.add(std::move(selectionEntity));
 
 	// buttons
 		// prev button
@@ -241,19 +233,12 @@ bool GameState::update(Time dt) {
 		mousePos.x / tilemap->getTileWidth(),
 		mousePos.y / tilemap->getTileHeight()
 	);
-	auto& sprite = mSelectionEntity->getComponent<SpriteRenderer>()->getSprite();
-	if (tilePos.x >= 0 && tilePos.x < tilemap->getWidth() && tilePos.y >= 0 && tilePos.y < tilemap->getHeight()) {
-		sprite.setPosition(
-			std::trunc(tilePos.x) * tilemap->getTileWidth(),
-			std::trunc(tilePos.y) * tilemap->getTileHeight()
-		);
-	}
 
 	mHourglass.update(dt);
 
 	auto currentCameraPos = mCamera.getPosition();
-	auto targetPosition = mPlayer->getPosition();
-	auto lerpPosition = (targetPosition - currentCameraPos) * 0.99f * dt.asSeconds() + currentCameraPos;
+	auto targetPosition = mPlayer->getPosition() + glm::vec2(-mPlayer->getOrigin().x, mPlayer->getHeight() / 2.f);
+	auto lerpPosition = (targetPosition - currentCameraPos) * 0.999f * dt.asSeconds() + currentCameraPos;
 	mCamera.setPosition(lerpPosition);
 
 	return true;
@@ -261,22 +246,34 @@ bool GameState::update(Time dt) {
 
 void GameState::draw(const Window& window) const {
 	window.draw(mEntityContainer, mCamera);
-	window.draw(mGUIContainer);
-	window.draw(mPreviewSprite);
+	if (mEditMode) {
+		window.draw(mGUIContainer);
+		window.draw(mPreviewSprite);
+	}
 	window.draw(mHourglass);
 }
 
 bool GameState::handleEvent(Event e) {
 	if (!mGUIContainer.handleEvent(e, getContext().window) && !mEntityContainer.handleEvent(e)) {
 		switch (e.type) {
-			/*case Event::Type::KeyPress:
-				if (e.key == Key::Space)
-					mPlayer->getComponent<RigidBody>()->accelerate(glm::vec2(0.f, 300.f));
-				break;*/
+			case Event::Type::KeyPress:
+				switch (e.key) {
+					case Key::E:
+							mEditMode = !mEditMode;
+						break;
+					case Key::Escape:
+							requestStackClear();
+							requestStackPush(StateID::MainMenu);
+						break;
+				}
+				break;
 			case Event::Type::MouseScroll:
-				mCamera.zoom(1.f + 0.1f * static_cast<float>(e.mouseScrollDelta.y));
+				if (mEditMode)
+					mCamera.zoom(1.f + 0.1f * static_cast<float>(e.mouseScrollDelta.y));
 				break;
 			case Event::Type::MouseButtonPress: {
+				if (!mEditMode)
+					break;
 				// determine which tile was clicked
 				auto mousePos = getContext().window.windowToWorldCoords(glm::vec2(e.mousePosition.x, e.mousePosition.y), mCamera);
 				auto* tilemap = mTilemap->getComponent<Tilemap>();

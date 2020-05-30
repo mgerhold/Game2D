@@ -4,6 +4,7 @@
 #include "Sprite.h"
 #include "Container.h"
 #include "Button.h"
+#include "Clock.h"
 
 class MainMenuState : public State {
 public:
@@ -16,8 +17,9 @@ public:
 
 private:
 	GUI::Container					mGUIContainer;
-	std::shared_ptr<GUI::Button>	mBackButton;
 	std::shared_ptr<GUI::Button>	mTestButton;
 	std::shared_ptr<GUI::Button>	mExitButton;
-	Sprite							mCheckerboard;
+	Sprite							mBackground;
+	Sprite							mLogo;
+	Clock							mClock;
 };

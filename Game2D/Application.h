@@ -7,7 +7,7 @@
 
 using namespace std::literals::string_literals;
 
-#define APPLICATION_TITLE "GLFW/GLAD Application"s
+#define APPLICATION_TITLE "Space Cat!"s
 
 class Application {
 public:

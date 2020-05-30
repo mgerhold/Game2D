@@ -3,6 +3,7 @@
 #include "State.h"
 #include "Text.h"
 #include "Clock.h"
+#include "Sprite.h"
 
 class TitleState : public State {
 public:
@@ -15,4 +16,5 @@ public:
 private:
 	Text	mText;
 	Clock	mClock;
+	Sprite	mFMODLogo;
 };

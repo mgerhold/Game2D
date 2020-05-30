@@ -25,7 +25,6 @@ private:
 
 private:
 	EntityContainer mEntityContainer;
-	Entity*			mSelectionEntity = nullptr;
 	Entity*			mTilemap = nullptr;
 	Entity*			mPlayer = nullptr;
 	Camera			mCamera;
@@ -34,4 +33,5 @@ private:
 	int				mSelectedPreviewTile = 1;
 	Hourglass		mHourglass;
 	Music			mMusic;
+	bool			mEditMode = false;
 };

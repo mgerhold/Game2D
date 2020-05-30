@@ -2,10 +2,10 @@
 #include "RigidBody.h"
 #include "Entity.h"
 #include "BoxCollider.h"
-#include "Tilemap.h"
 #include "Window.h"
 #include "AnimationRenderer.h"
 #include "AnimationController.h"
+#include "EntityContainer.h"
 #include <iostream>
 #include <string>
 
@@ -28,7 +28,9 @@ bool PlayerController::handleEvent(Event e) {
 }
 
 void PlayerController::onAwake() {
+	getEntity()->setPosition(StartingPosition);
 	mJumpSound.setSoundBuffer(getEntity()->getContext().soundBufferHolder.get(SoundID::PlayerJump));
+	mFallSound.setSoundBuffer(getEntity()->getContext().soundBufferHolder.get(SoundID::PlayerFall));
 
 	mRigidBody = getEntity()->getComponent<RigidBody>();
 	mWindow = &(getEntity()->getContext().window);
@@ -37,15 +39,19 @@ void PlayerController::onAwake() {
 	setupAnimations();
 	getEntity()->setOrigin(mAnimationRenderer->getAnimation().getSize().x / 2.f, 0.f);
 
+	const auto find = getEntity()->getEntityContainer()->getEntitiesWithComponent<Tilemap>();
+	mTilemap = find.front()->getComponent<Tilemap>();
+	assert(mTilemap != nullptr);
+
 	auto collider = getEntity()->getComponent<BoxCollider>();
 
+	// register collision callback for animations
 	collider->registerCallback(Collider::CallbackType::Enter, [this] (CollisionInfo info) {
 		auto tilemap = info.other->getComponent<Tilemap>();
 		if (tilemap) {
 			mIsTouchingMap = true;
 			/*if (*mAnimationController->getCurrentAnimationName() != "idle"s)
 				mAnimationController->setAnimation("idle");*/
-			std::cout << "Touching\n";
 		}
 	});
 
@@ -56,7 +62,14 @@ void PlayerController::onAwake() {
 			const auto targetAnimationName = mIsReversed ? "jump_reversed"s : "jump"s;
 			if (*mAnimationController->getCurrentAnimationName() != targetAnimationName)
 				mAnimationController->setAnimation(targetAnimationName);
-			std::cout << "Not touching\n";
+		}
+	});
+
+	// register collision callback for deadly tiles
+	collider->registerCallback(Collider::CallbackType::Enter, [this](CollisionInfo info) {
+		auto tilemap = info.other->getComponent<Tilemap>();
+		if (tilemap) {
+
 		}
 	});
 }
@@ -90,14 +103,26 @@ void PlayerController::onUpdate(Time dt) {
 		mAnimationScale = glm::vec2(-1.f, mAnimationScale.y);
 	}
 	if (!mIsReversed && mRigidBody->getGravity().y > 0.f && mIsTouchingMap && mRigidBody->getVelocity().y > 0.f) {
-		std::cout << "Reversed\n";
 		mIsReversed = true;
 	} else if (mIsReversed && mRigidBody->getGravity().y < 0.f && mIsTouchingMap && mRigidBody->getVelocity().y < 0.f) {
-		std::cout << "Not Reversed\n";
 		mIsReversed = false;
 	}
 	if (mAnimationRenderer->getAnimation().getScale() != mAnimationScale)
 		mAnimationRenderer->getAnimation().setScale(mAnimationScale);
+
+	constexpr float mapRectTolerance = 2000.f;
+	auto mapRect = FloatRect(
+		-mapRectTolerance,
+		-mapRectTolerance,
+		static_cast<float>(mTilemap->getWidth() * mTilemap->getTileWidth()) + mapRectTolerance,
+		static_cast<float>(mTilemap->getHeight() * mTilemap->getTileHeight() + mapRectTolerance)
+	);
+	if (!mapRect.isInside(getEntity()->getPosition().x, getEntity()->getPosition().y)) {
+		// outside of map => reset to start
+		mFallSound.play();
+		getEntity()->setPosition(StartingPosition);
+		mRigidBody->setVelocity(glm::vec2(0.f));
+	}
 }
 
 void PlayerController::setupAnimations() {

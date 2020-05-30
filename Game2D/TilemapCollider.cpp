@@ -73,11 +73,6 @@ void TilemapCollider::recalculateBoxes() {
 		);
 		mBoxes.push_back(rect);
 	}
-
-	std::cout << "Calculated the following boxes:\n";
-	for (const auto& box : mBoxes) {
-		std::cout << "\t" << box.left << ", " << box.bottom << " <=> " << box.right << ", " << box.top << "\n";
-	}
 }
 
 std::optional<CollisionInfo> TilemapCollider::checkCollision(Collider* other) {

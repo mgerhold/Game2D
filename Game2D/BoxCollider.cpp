@@ -8,9 +8,6 @@ std::optional<CollisionInfo> BoxCollider::checkCollision(Collider* other) {
 	if (otherBoxCollider) {
 		auto a = getEntity()->getWorldBounds();
 		auto b = otherBoxCollider->getEntity()->getWorldBounds();
-		auto printRect = [](FloatRect r) {
-			std::cout << r.left << ", " << r.bottom << " <=> " << r.right << ", " << r.top;
-		};
 		if (a.intersects(b)) {
 			CollisionInfo collisionInfo;
 			collisionInfo.intersection = FloatRect(

@@ -23,7 +23,6 @@ void Hourglass::awake() {
 	mAnimationTurning.generateAnimationStates(2, 2, Time::seconds(0.1f));
 	mAnimationTurning.setHold(true);
 	mAnimationTurning.setAnimationEndCallback([this]() {
-			std::cout << "Animation ended\n";
 			mTurning = false;
 			mAnimationRunning.reset();
 		});

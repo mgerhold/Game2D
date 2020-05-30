@@ -20,7 +20,7 @@ Application::Application()
 	, mContext(mTextureHolder, mFontHolder, mSoundBufferHolder, mWindow)
 	, mStateStack(mContext) {
 
-	mWindow.setClearColor(Color(0.4f, 0.4f, 0.4f, 1.0f));
+	mWindow.setClearColor(Color(0.1f, 0.1f, 0.1f, 1.0f));
 	mWindow.setKeyRepeat(false);
 
 	mShader.loadFromFile("shaders/default.vert", Shader::Type::Vertex);
@@ -31,9 +31,13 @@ Application::Application()
 
 	mFontHolder.load(FontID::Default, "fonts/arial.ttf");
 
+	mTextureHolder.load(TextureID::FMODLogo, "textures/fmod_logo.png");
+	mTextureHolder.load(TextureID::MainMenuBackground, "textures/bg2.jpg");
+	mTextureHolder.get(TextureID::MainMenuBackground).setTextureWrap(true);
+	mTextureHolder.load(TextureID::Logo, "textures/logo.png");
+
 	registerStates();
 	mStateStack.push(StateID::Title);
-	//mStateStack.push(StateID::Game);
 }
 
 void Application::run() {
@@ -62,7 +66,6 @@ void Application::run() {
 		}
 
 		// render
-		mWindow.setClearColor(Color(0.3f, 0.2f, 0.7f));
 		mWindow.clear();
 		mStateStack.draw(mWindow);
 		mWindow.swapBuffers();

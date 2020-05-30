@@ -9,23 +9,12 @@ MainMenuState::MainMenuState(StateStack* stateStack)
 	getContext().textureHolder.load(TextureID::ButtonSelected, "textures/button_selected.png");
 	getContext().textureHolder.load(TextureID::Checkerboard, "textures/checkerboard.jpg");
 	getContext().textureHolder.get(TextureID::Checkerboard).setTextureWrap(true);	
-	mCheckerboard.setTexture(getContext().textureHolder.get(TextureID::Checkerboard));
-	mCheckerboard.setTiling(5, 5);	
-	mCheckerboard.centerOrigin();
+	mBackground.setTexture(getContext().textureHolder.get(TextureID::MainMenuBackground));
+	mBackground.setTiling(50, 50);
+	mBackground.centerOrigin();
 
-	mExitButton = std::make_shared<GUI::Button>();
-	mExitButton->setNormalTexture(getContext().textureHolder.get(TextureID::ButtonNormal));
-	mExitButton->setSelectedTexture(getContext().textureHolder.get(TextureID::ButtonSelected));
-	mExitButton->setActiveTexture(getContext().textureHolder.get(TextureID::ButtonActive));
-	mExitButton->setString("Exit");
-	mExitButton->setFont(getContext().fontHolder.get(FontID::Default), 20);
-	mExitButton->setPosition(-mExitButton->getWidth() / 2.f, 0.f);
-	mExitButton->setCallbackFunc([this]() {
-		requestStackClear();
-	});
-
-	auto bounds = mExitButton->getLocalBounds();
-	std::cout << bounds.left << ", " << bounds.bottom << " <=> " << bounds.right << ", " << bounds.top << "\n";
+	mLogo.setTexture(getContext().textureHolder.get(TextureID::Logo));
+	mLogo.centerOrigin();
 
 	mTestButton = std::make_shared<GUI::Button>();
 	mTestButton->setNormalTexture(getContext().textureHolder.get(TextureID::ButtonNormal));
@@ -33,41 +22,49 @@ MainMenuState::MainMenuState(StateStack* stateStack)
 	mTestButton->setActiveTexture(getContext().textureHolder.get(TextureID::ButtonActive));
 	mTestButton->setString("Play");
 	mTestButton->setFont(getContext().fontHolder.get(FontID::Default), 20);
-	mTestButton->setPosition(-mTestButton->getWidth() / 2.f, mTestButton->getHeight() + 20.f);
+	mTestButton->setPosition(-mTestButton->getWidth() / 2.f, 0.f);
 	mTestButton->setCallbackFunc([this]() {
 		requestStackClear();
 		requestStackPush(StateID::Game);
 	});
 
-	mBackButton = std::make_shared<GUI::Button>();
-	mBackButton->setNormalTexture(getContext().textureHolder.get(TextureID::ButtonNormal));
-	mBackButton->setSelectedTexture(getContext().textureHolder.get(TextureID::ButtonSelected));
-	mBackButton->setActiveTexture(getContext().textureHolder.get(TextureID::ButtonActive));
-	mBackButton->setString("Back");
-	mBackButton->setFont(getContext().fontHolder.get(FontID::Default), 20);
-	mBackButton->setPosition(-mBackButton->getWidth() / 2.f, 2.f * (mTestButton->getHeight() + 20.f));
-	mBackButton->setCallbackFunc([this]() {
-		requestStackPop();
-		requestStackPush(StateID::Title);
+	mExitButton = std::make_shared<GUI::Button>();
+	mExitButton->setNormalTexture(getContext().textureHolder.get(TextureID::ButtonNormal));
+	mExitButton->setSelectedTexture(getContext().textureHolder.get(TextureID::ButtonSelected));
+	mExitButton->setActiveTexture(getContext().textureHolder.get(TextureID::ButtonActive));
+	mExitButton->setString("Exit");
+	mExitButton->setFont(getContext().fontHolder.get(FontID::Default), 20);
+	mExitButton->setPosition(-mExitButton->getWidth() / 2.f, -mExitButton->getHeight() - 20.f);
+	mExitButton->setCallbackFunc([this]() {
+		requestStackClear();
 	});
 
 	mGUIContainer.pack(mExitButton);
 	mGUIContainer.pack(mTestButton);
-	mGUIContainer.pack(mBackButton);
 }
 
 MainMenuState::~MainMenuState() {
 	getContext().textureHolder.unload(TextureID::Checkerboard);
 }
 
-bool MainMenuState::update(Time dt) {	
-	mCheckerboard.setRotation(mCheckerboard.getRotation() + glm::radians(40.f * dt.asSeconds()));
+bool MainMenuState::update(Time dt) {
+	mLogo.setPosition(0.f, getContext().window.getSize().y / 4.f);
+	mLogo.setScale(
+		std::sin(mClock.getElapsedTime().asSeconds()) * 0.05f + 0.65f,
+		-std::sin(mClock.getElapsedTime().asSeconds()) * 0.05f + 0.65f
+	);
+
+	mBackground.setPosition(
+		std::sin(0.1f * mClock.getElapsedTime().asSeconds()) * 50.f,
+		std::sin(0.15f * (mClock.getElapsedTime().asSeconds() + 2.f)) * 40.f
+	);
 	return true;
 }
 
 void MainMenuState::draw(const Window& window) const {
-	window.draw(mCheckerboard);
+	window.draw(mBackground);
 	window.draw(mGUIContainer);
+	window.draw(mLogo);
 }
 
 bool MainMenuState::handleEvent(Event e) {
