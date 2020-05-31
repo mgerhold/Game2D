@@ -20,7 +20,6 @@ namespace {
 
 	const std::vector<std::pair<TextureID, std::string>> neededTextures = {
 		{ TextureID::Tileset, "textures/tileset_new.png"s },
-		{ TextureID::TileSelection, "textures/selection.png"s },
 		{ TextureID::ArrowLeft1, "textures/arrow_left1.png"s },
 		{ TextureID::ArrowLeft2, "textures/arrow_left2.png"s },
 		{ TextureID::ArrowRight1, "textures/arrow_right1.png"s },
@@ -118,6 +117,10 @@ GameState::GameState(StateStack* stateStack)
 	player->addComponent(std::move(rigidBody));
 	// player.PlayerController
 	auto playerController = std::make_unique<PlayerController>();
+	playerController->setWinCallback([this]() {
+		requestStackClear();
+		requestStackPush(StateID::Win);
+	});
 	player->addComponent(std::move(playerController));
 	//player->setPosition(20.f, 90.f);
 	//player->setPosition(550.f, 400.f);

@@ -4,6 +4,7 @@
 #include "Sound.h"
 #include "Tilemap.h"
 #include <glm/vec2.hpp>
+#include <functional>
 
 class RigidBody;
 class Window;
@@ -12,7 +13,11 @@ class AnimationController;
 
 class PlayerController : public Component {
 public:
+	using Callback = std::function<void(void)>;
+
+public:
 	bool					handleEvent(Event e) override;
+	void					setWinCallback(Callback func);
 
 private:
 	void					onAwake() override;
@@ -30,6 +35,7 @@ private:
 	glm::vec2				mAnimationScale = glm::vec2(1.f);
 	Sound					mJumpSound;
 	Sound					mFallSound;
+	Callback				mWinCallback = nullptr;
 
 	const float				JumpAcceleration = 2000.f;
 	const float				MovementVelocity = 600.f;

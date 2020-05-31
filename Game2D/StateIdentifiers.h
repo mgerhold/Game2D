@@ -5,4 +5,5 @@ enum class StateID {
 	Title,
 	MainMenu,
 	Game,
+	Win,
 };

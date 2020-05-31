@@ -183,6 +183,9 @@
     <ClCompile Include="Hourglass.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="WinState.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Window.h">
@@ -378,6 +381,9 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Hourglass.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="WinState.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>

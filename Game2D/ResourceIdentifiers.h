@@ -6,17 +6,11 @@
 #include "SoundBuffer.h"
 
 enum class TextureID {
-	Eagle,
-	Raptor,
 	FMODLogo,
-	Checkerboard,
-	Explosion,
-	Guybrush,
 	ButtonNormal,
 	ButtonSelected,
 	ButtonActive,
 	Tileset,
-	TileSelection,
 	ArrowLeft1,
 	ArrowLeft2,
 	ArrowRight1,
@@ -38,11 +32,6 @@ enum class TextureID {
 };
 
 enum class SoundID {
-	Kick,
-	Snare,
-	Hats,
-	Crash,
-	Crow,
 	HourglassFX,
 	PlayerJump,
 	PlayerFall,

@@ -4,7 +4,9 @@
 #include "TitleState.h"
 #include "MainMenuState.h"
 #include "GameState.h"
+#include "WinState.h"
 #include <iostream>
+#include "AudioSystem.h"
 
 Application::Application()
 	: mWindow(
@@ -56,6 +58,7 @@ void Application::run() {
 
 			// update
 			mStateStack.update(Time::seconds(1.f) / mUpdatesPerSecond);
+			AudioSystem::update();
 
 			// process events
 			Window::processEvents();
@@ -99,4 +102,5 @@ void Application::registerStates() {
 	mStateStack.registerState<TitleState>(StateID::Title);
 	mStateStack.registerState<MainMenuState>(StateID::MainMenu);
 	mStateStack.registerState<GameState>(StateID::Game);
+	mStateStack.registerState<WinState>(StateID::Win);
 }

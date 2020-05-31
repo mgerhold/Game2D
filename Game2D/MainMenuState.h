@@ -5,6 +5,7 @@
 #include "Container.h"
 #include "Button.h"
 #include "Clock.h"
+#include "Text.h"
 
 class MainMenuState : public State {
 public:
@@ -22,4 +23,5 @@ private:
 	Sprite							mBackground;
 	Sprite							mLogo;
 	Clock							mClock;
+	Text							mText1, mText2, mText3;
 };

@@ -8,6 +8,7 @@
 #include "EntityContainer.h"
 #include <iostream>
 #include <string>
+#include "AudioSystem.h"
 
 using namespace std::literals::string_literals;
 
@@ -18,13 +19,17 @@ bool PlayerController::handleEvent(Event e) {
 				case Key::Space:
 					if (mIsTouchingMap) {
 						mRigidBody->accelerate(glm::vec2(0.f, mRigidBody->getGravity().y < 0.f ? JumpAcceleration : -JumpAcceleration));
-						mJumpSound.play();
+						AudioSystem::playSound(mJumpSound);
 					}
 					return true;
 			}
 			break;
 	}
 	return false;
+}
+
+void PlayerController::setWinCallback(Callback func) {
+	mWinCallback = func;
 }
 
 void PlayerController::onAwake() {
@@ -110,8 +115,20 @@ void PlayerController::onUpdate(Time dt) {
 	if (mAnimationRenderer->getAnimation().getScale() != mAnimationScale)
 		mAnimationRenderer->getAnimation().setScale(mAnimationScale);
 
+	const auto winRect = FloatRect(
+		static_cast<float>(mTilemap->getWidth() * mTilemap->getTileWidth()) - 200.f,
+		0.f,
+		static_cast<float>(mTilemap->getWidth() * mTilemap->getTileWidth()),
+		static_cast<float>(mTilemap->getHeight() * mTilemap->getTileHeight())
+	);
+
+	if (winRect.isInside(getEntity()->getPosition().x, getEntity()->getPosition().y)) {
+		if (mWinCallback)
+			mWinCallback();
+	}
+
 	constexpr float mapRectTolerance = 2000.f;
-	auto mapRect = FloatRect(
+	const auto mapRect = FloatRect(
 		-mapRectTolerance,
 		-mapRectTolerance,
 		static_cast<float>(mTilemap->getWidth() * mTilemap->getTileWidth()) + mapRectTolerance,
@@ -119,7 +136,7 @@ void PlayerController::onUpdate(Time dt) {
 	);
 	if (!mapRect.isInside(getEntity()->getPosition().x, getEntity()->getPosition().y)) {
 		// outside of map => reset to start
-		mFallSound.play();
+		AudioSystem::playSound(mFallSound);
 		getEntity()->setPosition(StartingPosition);
 		mRigidBody->setVelocity(glm::vec2(0.f));
 	}
